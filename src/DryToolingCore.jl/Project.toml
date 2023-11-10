@@ -1,0 +1,4 @@
+name = "DryToolingCore"
+uuid = "8d904351-f17f-419c-aa8d-05d4f5cffd52"
+authors = ["Walter Dal'Maz Silva <walter.dalmazsilva@gmail.com>"]
+version = "0.1.0"
