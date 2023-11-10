@@ -24,10 +24,14 @@ format = Documenter.HTML(;
     assets     = String[],
 )
 
+# format = Documenter.LaTeX(;
+#     platform = "tectonic",
+#     tectonic = "$(@__DIR__)/tectonic.exe"
+# )
+
 pages  = [
     "Home" => "index.md"
 ]
-# format = Documenter.LaTeX()
 
 makedocs(;
     modules  = [
