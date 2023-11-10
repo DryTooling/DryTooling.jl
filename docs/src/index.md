@@ -1,5 +1,5 @@
 # DryTooling.jl
 
 ```@docs
-DryToolingCore.greet
+DryToolingCore.coremean
 ```
