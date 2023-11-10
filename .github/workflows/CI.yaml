@@ -29,7 +29,6 @@ jobs:
             Pkg.develop(PackageSpec(path=pwd()))
             Pkg.instantiate()
             Pkg.develop(url="https://github.com/DryTooling/DryTooling.jl", subdir="src/DryToolingCore")
-            # Pkg.develop(url="https://github.com/DryTooling/DryTooling.jl", subdir="src/PkgOther")
             '
       - uses: julia-actions/julia-buildpkg@v1
       - uses: julia-actions/julia-docdeploy@v1
@@ -39,9 +38,6 @@ jobs:
           julia --project=docs -e '
             using Documenter: DocMeta, doctest
             using DryToolingCore
-            # using PkgOther
             DocMeta.setdocmeta!(DryToolingCore, :DocTestSetup, :(using DryToolingCore))
-            # DocMeta.setdocmeta!(PkgOther, :DocTestSetup, :(using PkgOther))
             doctest(DryToolingCore)
-            # doctest(PkgOther)
             '
