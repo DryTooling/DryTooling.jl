@@ -23,6 +23,7 @@ format = Documenter.HTML(;
 pages  = [
     "Home" => "index.md"
 ]
+# format = Documenter.LaTeX()
 
 makedocs(;
     modules  = [
