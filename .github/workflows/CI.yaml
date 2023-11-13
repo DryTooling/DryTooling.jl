@@ -28,7 +28,7 @@ jobs:
             using Pkg
             Pkg.develop(PackageSpec(path=pwd()))
             Pkg.instantiate()
-            Pkg.develop(url="https://github.com/DryTooling/DryTooling.jl", subdir="src/DryToolingCore")
+            Pkg.develop(url="https://github.com/DryTooling/DryTooling.jl", subdir="src/DryToolingCore.jl")
             '
       - uses: julia-actions/julia-buildpkg@v1
       - uses: julia-actions/julia-docdeploy@v1
