@@ -13,6 +13,21 @@ DryToolingCore.STEFAN_BOLTZMANN
 
 ## Haskell-like array slicing
 
+```jldoctest
+julia> using DryToolingCore;
+
+julia> v = collect(1:4);
+
+julia> head(v) == [1; 2; 3]
+true
+
+julia> tail(v) == [2; 3; 4]
+true
+
+julia> body(v) == [2; 3]
+true
+```
+
 ```@docs
 DryToolingCore.head
 DryToolingCore.tail
@@ -20,6 +35,25 @@ DryToolingCore.body
 ```
 
 ## Handling of discontinuous functions
+
+```jldoctest
+julia> using DryToolingCore;
+
+julia> heaviside(-1) == 0
+true
+
+julia> heaviside(-1.0) == 0.0
+true
+
+julia> heaviside(0.0) == 0.5
+true
+
+julia> heaviside(1.0) == 1.0
+true
+
+julia> interval(10; a = 0, b = 10) == 0.5
+true
+```
 
 ```@docs
 DryToolingCore.heaviside

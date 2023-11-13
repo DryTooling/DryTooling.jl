@@ -94,10 +94,24 @@ reasonable limits to plot axis or similar applications. Changing
 the rouding method through `roundf` is also possible.
 
 ```jldoctest
+julia> closestpowerofx(10)
+10
+
+julia> closestpowerofx(11)
+20
+
+julia> closestpowerofx(11, roundf = floor)
+10
+
+julia> closestpowerofx(11, x = 5, roundf = floor)
+10
+
 julia> closestpowerofx(12.0; x = 10)
 20
+
 julia> closestpowerofx(12.0; x = 10, roundf = floor)
 10
+
 julia> closestpowerofx(12.0; x = 10, roundf = round)
 10
 ```
@@ -153,11 +167,13 @@ Access view of array head. See also ``tail`` and ``body``.
 ```jldoctest
 julia> head(1:4)
 1:3
+
 julia> head([1, 2, 3, 4])
 3-element view(::Vector{Int64}, 1:3) with eltype Int64:
  1
  2
  3
+
 ```
 """
 head(z) = @view z[1:end-1]
