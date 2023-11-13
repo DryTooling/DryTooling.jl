@@ -48,8 +48,8 @@ pages  = [
 
     ################################################################
 
-    # "Reference API"         => "api.md",
-    # "Table of contents"     => "toc.md",
+    "Reference API"         => "api.md",
+    "Table of contents"     => "toc.md",
 ]
 
 format = formats[1]
