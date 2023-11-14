@@ -20,10 +20,10 @@ jobs:
           version: '1.9'
       - name: Install dependencies
         run: julia --project=docs/ -e '
-            using Pkg
-            Pkg.develop(PackageSpec(path=pwd()))
-            Pkg.instantiate()
-            Pkg.develop(url="https://github.com/DryTooling/DryTooling.jl", subdir="src/DryToolingCore.jl")'
+            using Pkg;
+            Pkg.develop(PackageSpec(path=pwd()));
+            Pkg.instantiate();
+            Pkg.develop(url="https://github.com/DryTooling/DryTooling.jl", subdir="src/DryToolingCore.jl");'
       - name: Build and deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
