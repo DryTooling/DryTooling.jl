@@ -6,7 +6,7 @@ using CSV
 using DataFrames
 using Latexify
 using Printf
-using DryTooling.Granular
+using DryToolingGranular
 
 "Partial data from Kramers (1952) Table 3"
 const DATA_TABLE3 = """\
