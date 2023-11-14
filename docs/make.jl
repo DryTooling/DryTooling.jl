@@ -2,7 +2,7 @@
 using Documenter
 using DocumenterCitations
 using DryToolingCore
-# using PkgOther
+using DryToolingGranular
 
 const NAME = "Walter Dal'Maz Silva"
 const MAIL = "walter.dalmazsilva.manager@gmail.com"
@@ -42,6 +42,12 @@ pages  = [
 
     ################################################################
 
+    "Granular" => [
+        "DryToolingGranular/index.md",
+    ],
+
+    ################################################################
+
     "Theory Guide"      => [
         "References"       => "references.md",
     ],
@@ -52,14 +58,14 @@ pages  = [
     "Table of contents"     => "toc.md",
 ]
 
-format = formats[1]
+modules = [
+    DryToolingCore,
+    DryToolingGranular,
+]
 
 makedocs(;
-    modules  = [
-        DryToolingCore,
-        # PkgOther
-    ],
-    format   = format,
+    modules  = modules,
+    format   = formats[1],
     clean    = true,
     sitename = SITENAME,
     authors  = "$(NAME) <$(MAIL)>",

@@ -24,6 +24,7 @@ jobs:
             Pkg.develop(PackageSpec(path=pwd()));
             Pkg.instantiate();
             Pkg.develop(url="https://github.com/DryTooling/DryTooling.jl", subdir="src/DryToolingCore.jl");'
+            Pkg.develop(url="https://github.com/DryTooling/DryTooling.jl", subdir="src/DryToolingGranular.jl");'
       - name: Build and deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
