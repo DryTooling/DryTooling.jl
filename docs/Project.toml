@@ -1,3 +1,5 @@
 [deps]
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 DocumenterCitations = "daee34ce-89f3-4625-b898-19384cb65244"
+DryTooling = "0dff88b2-42f1-4682-ada6-3beed8c0a17c"
+DryToolingCore = "8d904351-f17f-419c-aa8d-05d4f5cffd52"
