@@ -49,6 +49,7 @@ pages  = [
     ################################################################
 
     "Theory Guide"      => [
+        "Granular"         => "DryToolingGranular/theory.md",
         "References"       => "references.md",
     ],
 
