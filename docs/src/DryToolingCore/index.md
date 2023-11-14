@@ -35,16 +35,54 @@ julia> body(v) == [2; 3]
 true
 ```
 
-More examples are provided in the following documentation.
+More examples are provided in the following documentation ahead of each of the functions.
+
+```jldoctest
+julia> head(1:4)
+1:3
+
+julia> head([1, 2, 3, 4])
+3-element view(::Vector{Int64}, 1:3) with eltype Int64:
+ 1
+ 2
+ 3
+
+```
 
 ```@docs
 DryToolingCore.head
+```
+
+```jldoctest
+julia> tail([1, 2, 3, 4])
+3-element view(::Vector{Int64}, 2:4) with eltype Int64:
+ 2
+ 3
+ 4
+julia> tail(1:4)
+2:4
+```
+
+```@docs
 DryToolingCore.tail
+```
+
+```jldoctest
+julia> body([1, 2, 3, 4])
+2-element view(::Vector{Int64}, 2:3) with eltype Int64:
+ 2
+ 3
+julia> body(1:4)
+2:3
+```
+
+```@docs
 DryToolingCore.body
 ```
 
 ## Handling of discontinuous functions
 
+Discontinuous functions are all over in real world applications. Whether they handle discrete signals sent to controllers or represent a material property change in the solution domain of a heat transfer simulation, they are often represented by a single or a composition of [Heaviside step](https://en.wikipedia.org/wiki/Heaviside_step_function) functions. Again, because its implementation is pretty simple and optimization routines require a differentiable form of this function, `DryTooling` implements [`heaviside`](@ref) and [`interval`](@ref) as proposed in this [StackOverflow answer](https://stackoverflow.com/a/27677532/11987084).
 
 ```jldoctest
 julia> heaviside(-1) == 0
@@ -81,4 +119,9 @@ DryToolingCore.axesunitscaler
 ```@docs
 DryToolingCore.maxabsolutechange
 DryToolingCore.maxrelativechange
+```
+
+## Index
+
+```@index
 ```

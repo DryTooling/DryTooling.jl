@@ -162,52 +162,21 @@ end
 """
     head(z)
 
-Access view of array head. See also ``tail`` and ``body``.
-
-```jldoctest
-julia> head(1:4)
-1:3
-
-julia> head([1, 2, 3, 4])
-3-element view(::Vector{Int64}, 1:3) with eltype Int64:
- 1
- 2
- 3
-
-```
+Access view of array head. See also [`tail`](@ref) and [`body`](@ref).
 """
 head(z) = @view z[1:end-1]
 
 """
     tail(z)
 
-Access view of array tail. See also `head` and `body`.
-
-```jldoctest
-julia> tail([1, 2, 3, 4])
-3-element view(::Vector{Int64}, 2:4) with eltype Int64:
- 2
- 3
- 4
-julia> tail(1:4)
-2:4
-```
+Access view of array tail. See also [`head`](@ref) and [`body`](@ref).
 """
 tail(z) = @view z[2:end-0]
 
 """
     body(z)
 
-Access view of array body. See also `head` and `tail`.
-
-```jldoctest
-julia> body([1, 2, 3, 4])
-2-element view(::Vector{Int64}, 2:3) with eltype Int64:
- 2
- 3
-julia> body(1:4)
-2:3
-```
+Access view of array body. See also  [`head`](@ref) and [`tail`](@ref).
 """
 body(z) = @view z[2:end-1]
 
