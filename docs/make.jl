@@ -1,17 +1,27 @@
 # -*- coding: utf-8 -*-
 using Documenter
+using Documenter.DocMeta: setdocmeta!
 using DocumenterCitations
+
 using DryToolingCore
 using DryToolingGranular
+using DryToolingKinetics
+
+setdocmeta!(DryToolingCore,     :DocTestSetup, :(using DryToolingCore);     recursive=true)
+setdocmeta!(DryToolingGranular, :DocTestSetup, :(using DryToolingGranular); recursive=true)
+setdocmeta!(DryToolingKinetics, :DocTestSetup, :(using DryToolingKinetics); recursive=true)
+
+modules = [
+    DryToolingCore,
+    DryToolingGranular,
+    DryToolingKinetics,
+]
 
 const NAME = "Walter Dal'Maz Silva"
 const MAIL = "walter.dalmazsilva.manager@gmail.com"
 const GITHUBUSER = "DryTooling"
 const SITENAME = "DryTooling.jl"
 const REPOLINK = "https://github.com/$(GITHUBUSER)/$(SITENAME)"
-
-DocMeta.setdocmeta!(DryToolingCore, :DocTestSetup, :(using DryToolingCore); recursive=true)
-# DocMeta.setdocmeta!(PkgOther, :DocTestSetup, :(using PkgOther))
 
 bib_filepath = joinpath(@__DIR__, "src/references.bib")
 bib = CitationBibliography(bib_filepath)
@@ -72,10 +82,7 @@ pages  = [
     "Developement Guide"    => "dev.md",
 ]
 
-modules = [
-    DryToolingCore,
-    DryToolingGranular,
-]
+
 
 makedocs(;
     modules  = modules,
