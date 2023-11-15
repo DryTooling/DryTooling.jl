@@ -18,25 +18,14 @@ modules = [
     DryToolingKinetics,
 ]
 
-function parsepages(x)
-    name, target = x["name"], x["target"]
-    if isa(target, Vector{Dict{Any, Any}})
-        return name => map(parsepages, target)
-    end
-    return name => target
-end
-
-authors(c)   = "$(c["name"]) <$(c["mail"])> and contributors"
-repolink(c)  = "https://github.com/$(c["user"])/$(c["site"])"
-canonical(c) = "https://$(c["user"]).github.io/$(c["site"])"
-
 conf = YAML.load_file(joinpath(@__DIR__, "make.yaml"))
+repo  = "https://github.com/$(conf["user"])/$(conf["site"])"
 
 formats = [
     Documenter.HTML(;
         prettyurls = get(ENV, "CI", "false") == "true",
-        canonical  = canonical(conf),
-        repolink   = repolink(conf),
+        canonical  = "https://$(conf["user"]).github.io/$(conf["site"])",
+        repolink   = repo,
         edit_link  = "main",
         assets     = String[],
     ),
@@ -50,16 +39,13 @@ makedocs(;
     modules  = modules,
     format   = formats[1],
     clean    = true,
-    sitename = site,
-    authors  = authors(conf),
-    repo     = "$(repolink(conf))/blob/{commit}{path}#{line}",
-    pages    = map(parsepages, conf["pages"]),
+    sitename = conf["site"],
+    authors  = "$(conf["name"]) <$(conf["mail"])> and contributors",
+    repo     = "$(repo)/blob/{commit}{path}#{line}",
+    pages    = map(x->x["name"]=>x["target"], conf["pages"]),
     plugins  = [
         CitationBibliography(joinpath(@__DIR__, "src/references.bib"))
     ],
 )
 
-deploydocs(;
-    repo      = repo,
-    devbranch = "main"
-)
+deploydocs(; repo = repo, devbranch = "main")
