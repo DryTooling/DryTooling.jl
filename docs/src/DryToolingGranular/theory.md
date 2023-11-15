@@ -1,4 +1,4 @@
-# DryToolingGranular theory
+# Granular
 
 ```@contents
 Pages = ["theory.md"]

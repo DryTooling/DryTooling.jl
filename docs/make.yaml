@@ -1,0 +1,40 @@
+name: Walter Dal'Maz Silva
+mail: walter.dalmazsilva.manager@gmail.com
+user: DryTooling
+site: DryTooling.jl
+
+pages:
+  - name: Home
+    target:
+      - index.md
+
+  - name: Core
+    target:
+      - DryToolingCore/index.md
+      - DryToolingCore/abstract.md
+
+  - name: Granular
+    target:
+      - DryToolingGranular/index.md
+
+  - name: Kinetics
+    target:
+      - DryToolingKinetics/index.md
+
+  - name: Theory Guide
+    target:
+      - DryToolingGranular/theory.md
+      - references.md
+
+  - name: Validation Studies
+    target:
+      - DryToolingGranular/validation/kramers-model.md
+
+  - name: Reference API
+    target: api.md
+
+  - name: Table of Contents
+    target: toc.md
+
+  - name: Developement Guide
+    target: dev.md

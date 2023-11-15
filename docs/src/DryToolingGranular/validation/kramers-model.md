@@ -1,4 +1,4 @@
-# Validation of Kramers' model
+# Kramers' model
 
 ```@setup kramers
 using CairoMakie
