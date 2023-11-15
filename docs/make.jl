@@ -48,6 +48,12 @@ pages  = [
 
     ################################################################
 
+    "Kinetics" => [
+        "DryToolingKinetics/index.md",
+    ],
+
+    ################################################################
+
     "Theory Guide"      => [
         "Granular"         => "DryToolingGranular/theory.md",
         "References"       => "references.md",
