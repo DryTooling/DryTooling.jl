@@ -7,3 +7,9 @@ In this page you find a list of all documented functions of DryTooling. Rather t
 ```@index
 Modules = [ DryToolingCore ]
 ```
+
+## DryToolingGranular.jl
+
+```@index
+Modules = [ DryToolingGranular ]
+```

@@ -7,6 +7,8 @@ DocTestSetup  = quote
 end
 ```
 
+For the theory guide, please go to the following [page](theory.md).
+
 ## General porous media
 
 [`PackedBedPorosityDescriptor`](@ref) can be used to describe the geometry
@@ -91,6 +93,8 @@ DryToolingGranular.RotaryKilnBedSolution
 DryToolingGranular.plotlinearkramersmodel
 ```
 
+Validation of Kramers' model is provided [here](validation/kramers-model.md).
+
 Finally a set of basic equations provided for process analysis.
 
 ```@docs
@@ -100,11 +104,3 @@ DryToolingGranular.dimlessNₖ
 DryToolingGranular.perrayresidence
 DryToolingGranular.kramersnlapprox
 ```
-
-## Theory guide
-
-Please go to the module theory guide [page](theory.md).
-
-## Models validation
-
-- [Kramers' model](validation/kramers-model.md)

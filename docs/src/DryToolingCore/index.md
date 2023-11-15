@@ -230,8 +230,3 @@ DryToolingCore.axesunitscaler
 DryToolingCore.maxabsolutechange
 DryToolingCore.maxrelativechange
 ```
-
-## Index
-
-```@index
-```

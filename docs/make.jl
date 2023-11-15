@@ -55,8 +55,15 @@ pages  = [
 
     ################################################################
 
+    "Validation Studies" => [
+        "Kramers' model" => "DryToolingGranular/validation/kramers-model.md",
+    ],
+
+    ################################################################
+
     "Reference API"         => "api.md",
-    "Table of contents"     => "toc.md",
+    "Table of Contents"     => "toc.md",
+    "Developement Guide"    => "dev.md",
 ]
 
 modules = [
