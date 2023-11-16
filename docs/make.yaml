@@ -31,5 +31,5 @@ pages:
   - name: Table of Contents
     target: toc.md
 
-  - name: Developement Guide
+  - name: Developement
     target: dev.md

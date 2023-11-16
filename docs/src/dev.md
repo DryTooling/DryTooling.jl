@@ -13,13 +13,13 @@ To add a new package to the framework launch a terminal under the `src/` directo
 
 This will create a subdirectory with the given package name and its own `src/` directory and `Project.toml` file.
 
-Next you need to add the package to the documentation workflow. In section `Install dependencies` of `.github/workflows/documentation.yaml` add the following line:
+Next you need to add the package to the documentation workflow. In section `Install dependencies` of `.github/workflows/documentation.yaml` add the following line (constant `URL` is defined in workflow):
 
 ```julia
-Pkg.develop(url="https://github.com/DryTooling/DryTooling.jl", subdir="src/DryTooling<package-name>.jl");
+Pkg.develop(url=URL, subdir="src/DryTooling<package-name>.jl");
 ```
 
-Also update `docs/make.jl` following the pattern for existing sub-packages.
+Also update `docs/make.jl` following the pattern for existing sub-packages, *i.e*, add the package name *without .jl extension* to global `DRYTOOLING` and below, with other subpackages, add a `using` directive for the package. Keep packages in alphabetical order as displayed in file explorer for ease of verification.
 
 ## Generating the documentation
 
