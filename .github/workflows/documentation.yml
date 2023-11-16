@@ -28,8 +28,3 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: julia --project=docs/ docs/make.jl
-
-# URL = "https://github.com/DryTooling/DryTooling.jl";
-# Pkg.develop(url=URL, subdir="src/DryToolingCore.jl");
-# Pkg.develop(url=URL, subdir="src/DryToolingGranular.jl");
-# Pkg.develop(url=URL, subdir="src/DryToolingKinetics.jl");

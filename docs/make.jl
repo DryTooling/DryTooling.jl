@@ -5,8 +5,6 @@ using DocumenterCitations
 using Pkg
 using YAML
 
-LOCALDOCS = true
-
 ##############################################################################
 # HELPERS
 ##############################################################################
@@ -38,7 +36,7 @@ DRYTOOLING = [
     "DryToolingKinetics",
 ]
 
-LOCALDOCS && devpkgs()
+devpkgs()
 
 using DryToolingCore
 using DryToolingGranular
@@ -86,4 +84,4 @@ makedocs(;
 
 deploydocs(; repo = repo, devbranch = "main")
 
-LOCALDOCS && cleanuptoml()
+cleanuptoml()
