@@ -5,8 +5,7 @@ site: DryTooling.jl
 
 pages:
   - name: Home
-    target:
-      - index.md
+    target: index.md
 
   - name: Core
     target:
@@ -14,17 +13,13 @@ pages:
       - DryToolingCore/abstract.md
 
   - name: Granular
-    target:
-      - DryToolingGranular/index.md
+    target: DryToolingGranular/index.md
 
   - name: Kinetics
-    target:
-      - DryToolingKinetics/index.md
+    target: DryToolingKinetics/index.md
 
-  - name: Theory Guide
-    target:
-      - DryToolingGranular/theory.md
-      - references.md
+  - name: References
+    target: references.md
 
   - name: Validation Studies
     target:

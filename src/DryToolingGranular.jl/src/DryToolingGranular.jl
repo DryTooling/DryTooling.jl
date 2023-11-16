@@ -164,7 +164,7 @@ $(TYPEDFIELDS)
 Internal elements are initialized through the following constructor:
 
 ```julia
-RotaryKilnBedSolution(z::Vector{Float64}, h::Vector{Float64}, R::Float64, Φ::Float64)
+RotaryKilnBedSolution(z, h, β, R, Φ)
 ```
 
 Where parameters are given as:

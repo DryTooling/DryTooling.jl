@@ -2,15 +2,13 @@
 using Documenter
 using Documenter.DocMeta: setdocmeta!
 using DocumenterCitations
-using TOML
-using YAML
 using Pkg
+using YAML
+
 LOCALDOCS = true
 
 ##############################################################################
 # HELPERS
-#
-# Note: this was proferred over the `Pkg.develop` approach
 ##############################################################################
 
 "Path to *this* file in *this* directory."
@@ -22,63 +20,35 @@ backuptoml()  = cp(this("Project.toml"), this("TMP.toml"),     force = true)
 "Reverse temporary `Project.toml` backup. "
 cleanuptoml() = cp(this("TMP.toml"),     this("Project.toml"), force = true)
 
-"Retrieve data in *this* `Project.toml` file."
-function getprojecttoml()
-    return open(this("Project.toml")) do io
-        TOML.parse(io)
+"Temporarily add packages to development."
+function devpkgs()
+    backuptoml()
+    for name in DRYTOOLING
+        Pkg.develop(path = this("../src/$(name).jl"))
     end
-end
-
-"Feed development packages to *this* `Project.toml` file."
-function devpackages(pkgs)
-    for (key, value) in pkgs
-        Pkg.develop(path = this("../src/$(key).jl"))
-    end
-
-    # project_data = getprojecttoml()
-    # deps = project_data["deps"]
-    
-    # for (key, value) in pkgs
-    #     if !haskey(deps, key)
-    #         deps[key] = value
-    #     end
-    # end
-    
-    # project_data["deps"] = sort(deps)
-    
-    # open(this("Project.toml"), "w") do io
-    #     TOML.print(io, project_data)
-    # end
 end
 
 ##############################################################################
 # PACKAGES BLOCK
 ##############################################################################
 
-DRYTOOLING = Dict(
-    "DryToolingCore"     => "8d904351-f17f-419c-aa8d-05d4f5cffd52",
-    "DryToolingGranular" => "c4cd2e39-2c11-49af-bb08-d9d53d680cb6",
-    "DryToolingKinetics" => "6073c425-3840-42bf-8fb8-df8bffbffcc3",
-)
+DRYTOOLING = [
+    "DryToolingCore",
+    "DryToolingGranular",
+    "DryToolingKinetics",
+]
 
-if LOCALDOCS
-    backuptoml()
-    devpackages(DRYTOOLING)
-end
+LOCALDOCS && devpkgs()
 
 using DryToolingCore
 using DryToolingGranular
 using DryToolingKinetics
 
-modules = [
-    DryToolingCore,
-    DryToolingGranular,
-    DryToolingKinetics,
-]
-
 ##############################################################################
 # WORKFLOW
 ##############################################################################
+
+modules = map(x->getfield(Main, Symbol(x)), DRYTOOLING)
 
 for m in modules
     setdocmeta!(m, :DocTestSetup, :(using m); warn = false, recursive = true)
@@ -116,6 +86,4 @@ makedocs(;
 
 deploydocs(; repo = repo, devbranch = "main")
 
-if LOCALDOCS
-    cleanuptoml()
-end
+LOCALDOCS && cleanuptoml()
