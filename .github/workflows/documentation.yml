@@ -23,12 +23,13 @@ jobs:
             using Pkg;
             Pkg.develop(PackageSpec(path=pwd()));
             Pkg.instantiate();
-            URL = "https://github.com/DryTooling/DryTooling.jl";
-            Pkg.develop(url=URL, subdir="src/DryToolingCore.jl");
-            Pkg.develop(url=URL, subdir="src/DryToolingGranular.jl");
-            Pkg.develop(url=URL, subdir="src/DryToolingKinetics.jl");
             println("Dependencies added (this is a dummy line for better formatting of workflow)!");'
       - name: Build and deploy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: julia --project=docs/ docs/make.jl
+
+# URL = "https://github.com/DryTooling/DryTooling.jl";
+# Pkg.develop(url=URL, subdir="src/DryToolingCore.jl");
+# Pkg.develop(url=URL, subdir="src/DryToolingGranular.jl");
+# Pkg.develop(url=URL, subdir="src/DryToolingKinetics.jl");
