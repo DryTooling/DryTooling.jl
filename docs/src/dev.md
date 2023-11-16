@@ -23,7 +23,7 @@ Because of the multiple package in a repository structure, this documentation fo
 
 For generating the documentation locally, from a Julia session running from `docs/` , this is automalically done by  `make.jl` and the following is run from the REPL:
 
-```julia-repl
+```repl
 (@v1.9) pkg> activate .
   Activating project at `D:\DryTooling.jl\docs`
 
