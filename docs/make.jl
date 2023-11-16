@@ -34,6 +34,7 @@ DRYTOOLING = [
     "DryToolingCore",
     "DryToolingGranular",
     "DryToolingKinetics",
+    "DryToolingSimulation",
 ]
 
 devpkgs()
@@ -41,6 +42,7 @@ devpkgs()
 using DryToolingCore
 using DryToolingGranular
 using DryToolingKinetics
+using DryToolingSimulation
 
 ##############################################################################
 # WORKFLOW

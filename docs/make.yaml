@@ -18,6 +18,9 @@ pages:
   - name: Kinetics
     target: DryToolingKinetics/index.md
 
+  - name: Simulation
+    target: DryToolingSimulation/index.md
+
   - name: References
     target: references.md
 
