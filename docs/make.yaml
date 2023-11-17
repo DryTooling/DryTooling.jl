@@ -36,3 +36,9 @@ pages:
 
   - name: Developement
     target: dev.md
+
+  - name: Learning
+    target:
+      - Learning/index.md
+      - Learning/JuliaParaCientistas/index.md
+      - Learning/TransportPhenomena/index.md
