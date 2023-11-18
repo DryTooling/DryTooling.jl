@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Introduction to Advection in 1-D · DryTooling.jl</title><meta name="title" content="Introduction to Advection in 1-D · DryTooling.jl"/><meta property="og:title" content="Introduction to Advection in 1-D · DryTooling.jl"/><meta property="twitter:title" content="Introduction to Advection in 1-D · DryTooling.jl"/><meta name="description" content="Documentation for DryTooling.jl."/><meta property="og:description" content="Documentation for DryTooling.jl."/><meta property="twitter:description" content="Documentation for DryTooling.jl."/><meta property="og:url" content="https://DryTooling.github.io/DryTooling.jl/Learning/TransportPhenomena/001-advection-1d/"/><meta property="twitter:url" content="https://DryTooling.github.io/DryTooling.jl/Learning/TransportPhenomena/001-advection-1d/"/><link rel="canonical" href="https://DryTooling.github.io/DryTooling.jl/Learning/TransportPhenomena/001-advection-1d/"/><script data-outdated-warner src="../../../assets/warner.js"></script><link href="https://cdnjs.cloudflare.com/ajax/libs/lato-font/3.0.0/css/lato-font.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/juliamono/0.050/juliamono.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/fontawesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/solid.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/brands.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.8/katex.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL="../../.."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" data-main="../../../assets/documenter.js"></script><script src="../../../search_index.js"></script><script src="../../../siteinfo.js"></script><script src="../../../../versions.js"></script><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../../assets/themes/documenter-dark.css" data-theme-name="documenter-dark" data-theme-primary-dark/><link class="docs-theme-link" rel="stylesheet" type="text/css" href="../../../assets/themes/documenter-light.css" data-theme-name="documenter-light" data-theme-primary/><script src="../../../assets/themeswap.js"></script></head><body><div id="documenter"><nav class="docs-sidebar"><div class="docs-package-name"><span class="docs-autofit"><a href="../../../">DryTooling.jl</a></span></div><button class="docs-search-query input is-rounded is-small is-clickable my-2 mx-auto py-1 px-2" id="documenter-search-query">Search docs (Ctrl + /)</button><ul class="docs-menu"><li><a class="tocitem" href="../../../">Home</a></li><li><span class="tocitem">Core</span><ul><li><a class="tocitem" href="../../../DryToolingCore/">DryToolingCore</a></li><li><a class="tocitem" href="../../../DryToolingCore/abstract/">Abstract types</a></li></ul></li><li><a class="tocitem" href="../../../DryToolingGranular/">Granular</a></li><li><a class="tocitem" href="../../../DryToolingKinetics/">Kinetics</a></li><li><a class="tocitem" href="../../../DryToolingSimulation/">Simulation</a></li><li><a class="tocitem" href="../../../references/">References</a></li><li><span class="tocitem">Validation Studies</span><ul><li><a class="tocitem" href="../../../DryToolingGranular/validation/kramers-model/">Kramers&#39; model</a></li></ul></li><li><a class="tocitem" href="../../../api/">Reference API</a></li><li><a class="tocitem" href="../../../toc/">Table of Contents</a></li><li><a class="tocitem" href="../../../dev/">Developement</a></li><li><span class="tocitem">Learning</span><ul><li><a class="tocitem" href="../../">Learning resources</a></li><li><a class="tocitem" href="../../JuliaParaCientistas/">Julia para Cientistas</a></li><li><a class="tocitem" href="../">Transport Phenomena</a></li></ul></li></ul><div class="docs-version-selector field has-addons"><div class="control"><span class="docs-label button is-static is-size-7">Version</span></div><div class="docs-selector control is-expanded"><div class="select is-fullwidth is-size-7"><select id="documenter-version-selector"></select></div></div></div></nav><div class="docs-main"><header class="docs-navbar"><a class="docs-sidebar-button docs-navbar-link fa-solid fa-bars is-hidden-desktop" id="documenter-sidebar-button" href="#"></a><nav class="breadcrumb"><ul class="is-hidden-mobile"><li class="is-active"><a href>Introduction to Advection in 1-D</a></li></ul><ul class="is-hidden-tablet"><li class="is-active"><a href>Introduction to Advection in 1-D</a></li></ul></nav><div class="docs-right"><a class="docs-navbar-link" href="https://github.com/DryTooling/DryTooling.jl" title="View the repository on GitHub"><span class="docs-icon fa-brands"></span><span class="docs-label is-hidden-touch">GitHub</span></a><a class="docs-navbar-link" href="https://github.com/DryTooling/DryTooling.jl/blob/main/docs/src/Learning/TransportPhenomena/001-advection-1d.md#" title="Edit source on GitHub"><span class="docs-icon fa-solid"></span></a><a class="docs-settings-button docs-navbar-link fa-solid fa-gear" id="documenter-settings-button" href="#" title="Settings"></a><a class="docs-article-toggle-button fa-solid fa-chevron-up" id="documenter-article-toggle-button" href="javascript:;" title="Collapse all docstrings"></a></div></header><article class="content" id="documenter-page"><h1 id="Introduction-to-Advection-in-1-D"><a class="docs-heading-anchor" href="#Introduction-to-Advection-in-1-D">Introduction to Advection in 1-D</a><a id="Introduction-to-Advection-in-1-D-1"></a><a class="docs-heading-anchor-permalink" href="#Introduction-to-Advection-in-1-D" title="Permalink"></a></h1><p>Vamos abordar neste tutorial a implementação de um integrador para a equação de advecção nas suas formas linear e não linear. Como este é o primeiro <em>bloco</em> da construção da equação de Navier-Stokes que almejamos alcançar ao final do livro texto, vamos clarificar alguns pontos sobre a metodologia que será empregada.</p><p>O leitor que já tenha estudado o tópico através de outras fontes, como <a href="https://github.com/barbagroup/CFDPython">CFDPython</a>, mais conhecido como <em>12 passos para Navier Stokes</em> vai observar que nossos códigos são mais estruturados e menos explícitos. Isso vem da nossa observação de que existe uma pletora de fontes instruindo o básico de programação científica, mas faltam fontes aonde não somente as equações são abordadas. É de nossa experiência o excesso de cientistas e engenheiros que vieram a aprender a estruturar um programa tardivamente, o que resulta em uma infinidade de repositórios com código que, embora às vezes funcional, é praticamente impossível de se realizar a manutenção ou mesmo utilizar.</p><p>Dessa crítica ao <em>status quo</em>, vamos ao longo desta série não somente resolver os problemas de uma ótica numérica, mas também progressivamente <em>pensar antes de programar</em> a forma do programa que desejamos conceber. O estudante que se engajar nessas práticas sem a menor dúvida terá uma carreira técnica de maior sucesso e performance que os demais.</p><p>Aqui nos deparamos com um primeiro <em>conundrum</em>: uma interface interativa como Pluto não é o meio ideal para se conceber um programa a ser mantido ao longo dos anos. Esse tipo de documento é perfeito para realizar demonstrações e usar interfaces de implementações mais complexas fornecidas através de pacotes. Vamos nesse primeiro momento ignorar esse fato porque, embora buscamos transmitir o conhecimento de como conceber um programa de qualidade, seríamos frustrados por uma tentativa de ensinar isso diretamente com a concepção de pacotes, tema que é abordado anexamente ao livro texto.</p><p>No que se segue neste <em>notebook</em> (vamos aceitar este anglicismo eventual ao longo do texto) e nos subsequentes adotaremos uma estrutura típica. Começamos com uma descrição do problema que desejamos resolver a as funcionalidades almejadas. Com isso podemos pensar nas ferramentas que vamos necessitar e como dita a boa prática importá-las logo no início do programa. Em seguida provemos todo o código que é auxiliar ao problema numérico, como por exemplo a geração de gráficos, de maneira a eliminar suas interferências na leitura do código principal. Finalmente concebemos o código com o conteúdo matemático abordado e seguimos com um programa de aplicação. Essa forma será empregada nos demais <em>notebooks</em> sem que tenhamos que repetir essa descrição.</p><h2 id="Required-tools"><a class="docs-heading-anchor" href="#Required-tools">Required tools</a><a id="Required-tools-1"></a><a class="docs-heading-anchor-permalink" href="#Required-tools" title="Permalink"></a></h2><pre><code class="language-julia hljs">using Unitful
+using CairoMakie</code></pre><h2 id="Shared-utilities"><a class="docs-heading-anchor" href="#Shared-utilities">Shared utilities</a><a id="Shared-utilities-1"></a><a class="docs-heading-anchor-permalink" href="#Shared-utilities" title="Permalink"></a></h2><pre><code class="language-julia hljs">abstract type AbstractAdvection end</code></pre><pre><code class="language-julia hljs">function integrate!(p::AbstractAdvection)::Nothing
+    for (k, t) in enumerate(p.t[1:end-1])
+        # Uncomment below to check correct stepping:
+        # @info &quot;Advancing from $t to $(p.t[k+1])&quot;
+        p.M[k, :] = copy(ustrip(p.u))
+        step!(p)
+    end
+
+    p.M[end, :] = copy(ustrip(p.u))
+    return nothing
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">integrate! (generic function with 1 method)</code></pre><pre><code class="language-julia hljs">function plotstate(p::AbstractAdvection)::Figure
+    x = ustrip(p.x)
+    u₀ = p.M[1, 1:end]
+    u₁ = p.M[end, 1:end]
+
+    fig = Figure(resolution = (700, 500))
+    ax = Axis(fig[1, 1])
+    l1 = lines!(ax, x, u₀; linewidth = 3)
+    l2 = lines!(ax, x, u₁; linewidth = 3)
+    ax.title = &quot;Initial and final states of problem&quot;
+    ax.xlabel = &quot;Coordinate [m]&quot;
+    ax.ylabel = &quot;Velocity [m/s]&quot;
+    xlims!(ax, extrema(x))
+    axislegend(ax, [l1, l2], [&quot;Initial&quot;, &quot;Final&quot;], &quot;States&quot;,
+               position = :lt, orientation = :vertical)
+    return fig
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">plotstate (generic function with 1 method)</code></pre><p>It is also interesting to provide a function to visualize space solution over time. This is the job of a <a href="https://en.wikipedia.org/wiki/Kymograph">kymograph</a>, which is provided below.</p><pre><code class="language-julia hljs">function kymograph(p::AbstractAdvection; xticks, yticks, zticks)::Figure
+    colormap = :gnuplot2
+    colorrange = extrema(zticks)
+
+    x = ustrip(p.x)
+    y = ustrip(p.t)
+    z = transpose(p.M)
+
+    fig = Figure(resolution = (700, 600))
+    ax = Axis(fig[2, 1], xlabel = &quot;Coordinate [m]&quot;, ylabel = &quot;Time [s]&quot;)
+    hm = heatmap!(ax, x, y, z; colormap, interpolate = true, colorrange)
+    cb = Colorbar(fig[1, 1], hm, vertical = false, label = &quot;Velocity [m/s]&quot;)
+
+    ax.xticks = xticks
+    ax.yticks = yticks
+    xlims!(ax, extrema(ax.xticks.val))
+    ylims!(ax, extrema(ax.yticks.val))
+
+    cb.ticks = zticks
+    cb.limits = extrema(zticks)
+    return fig
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">kymograph (generic function with 1 method)</code></pre><h2 id="Linear-advection"><a class="docs-heading-anchor" href="#Linear-advection">Linear advection</a><a id="Linear-advection-1"></a><a class="docs-heading-anchor-permalink" href="#Linear-advection" title="Permalink"></a></h2><pre><code class="language-julia hljs">struct LinearAdvection1D &lt;: AbstractAdvection
+    t::Vector{Unitful.Time}
+    x::Vector{Unitful.Length}
+    u::Vector{Unitful.Velocity}
+    c::Unitful.Velocity
+    δ::Unitful.Length
+    τ::Unitful.Time
+    M::Matrix{Float64}
+
+    function LinearAdvection1D(L, T, c, nₓ, nₜ; init, integ = true)
+        δ = L / (nₓ - 1)
+        τ = T / (nₜ - 1)
+        t = collect(0.0u&quot;s&quot;:τ:T)
+        x = collect(0.0u&quot;m&quot;:δ:L)
+        u = 0u&quot;m/s&quot; * zeros(Float64, nₓ)
+        M = zeros(Float64, (nₜ, nₓ))
+
+        init(x, u)
+
+        obj = new(t, x, u, c, δ, τ, M)
+        integ &amp;&amp; integrate!(obj)
+        return obj
+    end
+end</code></pre><pre><code class="language-julia hljs">function step!(p::LinearAdvection1D)::Nothing
+    α = p.c * (p.τ / p.δ)
+    p.u[2:end] = (1 - α) * p.u[2:end] + α * p.u[1:end-1]
+    return nothing
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">step! (generic function with 1 method)</code></pre><h2 id="Problem-statement"><a class="docs-heading-anchor" href="#Problem-statement">Problem statement</a><a id="Problem-statement-1"></a><a class="docs-heading-anchor-permalink" href="#Problem-statement" title="Permalink"></a></h2><p>Considere um domínio hipotético de comprimento <span>$L=2.5\:\mathrm{m}$</span> na direção do eixo <span>$x$</span> sobre o qual temos uma <em>onda de uma substância insolúvel</em> localizada nas coordenadas <span>$x\in[0.5;1.0]\:\mathrm{m}$</span> movendo-se a <span>$u=1\:\mathrm{m\cdotp{}s^{-1}}$</span> e sendo a metade deste valor no restante do espaço. No instante inicial <span>$t=0\:\mathrm{s}$</span> um fluxo de fluido com velocidade constante <span>$c=1\:\mathrm{m\cdotp{}s^{-1}}$</span> é força através do domínio, o qual já se encontra imerso no fluido.</p><hr/><p>Determine a posição e velocidade <span>$u(x,t)$</span> da substância no intervalo de <span>$T=1.0\:\mathrm{s}$</span> que se segue.</p><hr/><p>Com esses elementos temos a descrição suficiente do problema para iniciar a sua tranposição na forma de código com Julia. Para asseguramos a consistência física do problema vamos utilizar valores numéricos acompanhados de unidades providas pelo pacote <a href="https://painterqubits.github.io/Unitful.jl/stable/">Unitful</a>.</p><p><strong>Nota:</strong> em problemas de larga escala essa abordagem talvez traga inconvenientes de sobrecarga computacional, no entanto é recomendado que se concebam programas compatíveis com <code>Unitful</code> para a verificação de consistência em casos de teste.</p><p>Na próxima célula provemos todos os elementos numéricos presentes na descrição do problema.</p><pre><code class="language-julia hljs"># Domain length.
+L = 2.5u&quot;m&quot;
+
+# Time domain.
+T = 1.0u&quot;s&quot;
+
+# Fluid velocity.
+c = 1.0u&quot;m/s&quot;
+
+# Wave velocity.
+u₀ = 1.0u&quot;m/s&quot;
+
+# Initialization function.
+init(x, u) = let
+    hump = (0.5u&quot;m&quot; .&lt; x) .&amp; (x .&lt; 1.0u&quot;m&quot;)
+    u[:]    .= u₀ / 2.0
+    u[hump] .= u₀
+end</code></pre><h2 id="Solve-linear-advection"><a class="docs-heading-anchor" href="#Solve-linear-advection">Solve linear advection</a><a id="Solve-linear-advection-1"></a><a class="docs-heading-anchor-permalink" href="#Solve-linear-advection" title="Permalink"></a></h2><p>To remain within the region where the error introduced by the discretization scheme remains <em>small</em>, we need to <em>think</em> what would be a good number of steps and nodes to split our system. Thinking physically, we would not want the density <span>$u$</span> to be transported by more than one node distance <span>$\delta$</span> in a time step <span>$\tau$</span>, otherwise we would be <em>skipping</em> information transfer. Thus, there is some logic constraining <span>$\delta\le{}c\tau$</span> to be respected here. We also have infinite gradients in the specified square wave of mass density, so space step should not be too small otherwise it would lead to a overflow error..., well, there are many other aspects to be considered, but we did not introduce them yet. So let&#39;s just assume that as a rule of thumb <em>both space and time discretization must be reasonably smaller than the integration domains</em>.</p><p>Below we assume this <em>reasonably small</em> criterium is 1/500 the size of the system and compute the required nodal distance and time step. Notice the <code>- 1</code> in the denominator, because the number of intervals between <span>$k$</span> nodes is <span>$k-1$</span>. The computed values are displayed with their respective units.</p><pre><code class="language-julia hljs">nₓ = 101
+nₜ = 101
+p1 = LinearAdvection1D(L, T, c, nₓ, nₜ; init)</code></pre><img src="c394a9df.png" alt="Example block output"/><img src="75894a4b.png" alt="Example block output"/><h2 id="Nonlinear-advection"><a class="docs-heading-anchor" href="#Nonlinear-advection">Nonlinear advection</a><a id="Nonlinear-advection-1"></a><a class="docs-heading-anchor-permalink" href="#Nonlinear-advection" title="Permalink"></a></h2><pre><code class="language-julia hljs">struct NonlinearAdvection1D &lt;: AbstractAdvection
+    t::Vector{Unitful.Time}
+    x::Vector{Unitful.Length}
+    u::Vector{Unitful.Velocity}
+    δ::Unitful.Length
+    τ::Unitful.Time
+    M::Matrix{Float64}
+
+    function NonlinearAdvection1D(L, T, nₓ, nₜ; init, integ = true)
+        p = LinearAdvection1D(L, T, 1.0u&quot;m/s&quot;, nₓ, nₜ; init, integ = false)
+        obj = new(p.t, p.x, p.u, p.δ, p.τ, p.M)
+        integ &amp;&amp; integrate!(obj)
+        return obj
+    end
+end</code></pre><pre><code class="language-julia hljs">function step!(p::NonlinearAdvection1D)::Nothing
+    α = p.u[2:end] .* (p.τ / p.δ)
+    p.u[2:end] = @. (1 - α) * p.u[2:end] + α * p.u[1:end-1]
+    return nothing
+end</code></pre><pre class="documenter-example-output"><code class="nohighlight hljs ansi">step! (generic function with 2 methods)</code></pre><h2 id="Solve-nonlinear-advection"><a class="docs-heading-anchor" href="#Solve-nonlinear-advection">Solve nonlinear advection</a><a id="Solve-nonlinear-advection-1"></a><a class="docs-heading-anchor-permalink" href="#Solve-nonlinear-advection" title="Permalink"></a></h2><pre><code class="language-julia hljs">nₓ = 101
+nₜ = 101
+p2 = NonlinearAdvection1D(L, T, nₓ, nₜ; init)</code></pre><img src="b632cc1a.png" alt="Example block output"/><img src="be4112f8.png" alt="Example block output"/></article><nav class="docs-footer"><p class="footer-message">Powered by <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> and the <a href="https://julialang.org/">Julia Programming Language</a>.</p></nav></div><div class="modal" id="documenter-settings"><div class="modal-background"></div><div class="modal-card"><header class="modal-card-head"><p class="modal-card-title">Settings</p><button class="delete"></button></header><section class="modal-card-body"><p><label class="label">Theme</label><div class="select"><select id="documenter-themepicker"><option value="documenter-light">documenter-light</option><option value="documenter-dark">documenter-dark</option><option value="auto">Automatic (OS)</option></select></div></p><hr/><p>This document was generated with <a href="https://github.com/JuliaDocs/Documenter.jl">Documenter.jl</a> version 1.1.2 on <span class="colophon-date" title="Saturday 18 November 2023 17:41">Saturday 18 November 2023</span>. Using Julia version 1.9.4.</p></section><footer class="modal-card-foot"></footer></div></div></div></body></html>
