@@ -17,3 +17,10 @@ For extending existing models and *preferrably* contributing to the package's gr
 ## Citing
 
 Found it useful? See [`CITATION.bib`](https://github.com/DryTooling/DryTooling.jl/blob/main/CITATION.bib) for the relevant reference.
+
+## Contact
+
+|                         |      |
+| ----------------------: | :--- |
+  Questions and proposals | [Zulip Chat](https://wallytutor.zulipchat.com)
+  Found and error or bug  | [Create and issue](https://github.com/DryTooling/DryTooling.jl/issues/new)
