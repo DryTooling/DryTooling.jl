@@ -33,7 +33,37 @@ Recomenda-se o estudo do presente tutorial de forma interativa em uma longa seç
 1. [Tipos De Dados E Estruturas](015-tipos-de-dados-e-estruturas.md)
 1. [Metaprogramacao E Macros](016-metaprogramacao-e-macros.md)
 1. [Interoperacao Com C](017-interoperacao-com-c.md)
+1. [Equações diferenciais ordinárias](index.md)
+1. [Equações diferenciais parciais](index.md)
+1. [Redes neuronais clássicas](index.md)
+1. [Aprendizado com suporte físico](index.md)
+1. [Análise quantitativa de imagens](index.md)
+1. [Criando seus próprios pacotes](index.md)
 ```
+
+## Seguindo os materiais
+
+Os conteúdos são majoritariamente sequenciais: exceto para os tópicos mais avançados (para aqueles que já programam em Julia), é necessário seguir os notebooks na ordem provida.
+
+Um canal YouTube do curso está em fase de concepção para abordar os detalhes entre-linhas, involvendo aspectos que não necessariamente estão escritos.
+
+Etapas à seguir para começar os estudos:
+
+1. Ler sobre *ciência colaborativa* abaixo para se familiarizar com alguns elementos que vamos abordar no que se segue.
+
+1. [Instalar Julia](https://julialang.org/downloads/) na versão estável para seu sistema operacional.
+
+1. [Instalar Pluto](https://github.com/fonsp/Pluto.jl) para visualizar e editar os notebooks do curso.
+
+1. Clonar este repositório com todos os materiais usando a seguinte ordem de prioridade:
+
+    - Usando Git à través da linha de comando, forma recomendada com `git clone https://github.com/DryTooling/DryTooling.jl.git`
+
+    - Com a interface gráfica de [GitHub Desktop](https://desktop.github.com/)
+
+    - Usando o botão de [Download](https://github.com/DryTooling/DryTooling.jl/archive/refs/heads/main.zip)
+
+Caso a última opção de download tenha sido a sua escolha, observe que o arquivo `.zip` não contem os elementos de *repositório git* para controle de versão, implicando que as suas modificações e notas tomadas deverão ser geridas localmente, o que não é recomendável. Para estudantes ainda não familiarizados com *git*, a opção de utilizar GitHub Desktop é a mais apropriada.
 
 ## Ciência colaborativa
 
