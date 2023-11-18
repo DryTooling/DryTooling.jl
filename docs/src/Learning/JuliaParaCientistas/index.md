@@ -17,9 +17,9 @@ Recomenda-se o estudo do presente tutorial de forma interativa em uma longa seç
 1. [Primeiros Passos](001-primeiros-passos.md)
 1. [Manipulacao Textual](002-manipulacao-textual.md)
 1. [Estruturas De Dados](003-estruturas-de-dados.md)
+1. [Estruturas De Dados](004-estruturas-de-dados.md)
 
 ```
-1. [Estruturas De Dados](004-estruturas-de-dados.md)
 1. [Lacos E Condicionais](005-lacos-e-condicionais.md)
 1. [Funcoes E Despacho](006-funcoes-e-despacho.md)
 1. [Pacotes E Ecossistema](007-pacotes-e-ecossistema.md)

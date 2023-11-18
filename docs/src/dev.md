@@ -4,6 +4,10 @@ DryTooling is an unpublished rolling release package set composed of several sub
 
 This page aims at providing a *tutorial* for managing DryTooling.
 
+## Project management
+
+Join the project management [here](https://tree.taiga.io/project/wallytutor-drytoolingjl).
+
 ## Adding new packages
 
 To add a new package to the framework launch a terminal under the `src/` directory of the parent repository and state a julia REPL. Then change to `pkg>` mode by pressing `]` and run `generate DryTooling<package-name>.jl`, where you should replace the `<package-name>` by the actual package's name.
