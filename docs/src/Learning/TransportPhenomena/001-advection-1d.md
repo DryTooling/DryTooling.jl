@@ -1,5 +1,44 @@
 # Introduction to Advection in 1-D
 
+Neste capítulo entramos no primeiro tópico ao qual o título deste livro se refere. A equação da advecção é parte constituinte das equações de Navier-Stokes que almejamos resolver numericamente antes do final da obra. Ela descreve o transporte de uma quantidade induzido por um campo vetorial através deste campo. A escolha de começar com este tópico ao invés de difusão ou a equação de Poisson se justifica principalmente pela implementação computacional extremamente simples na forma explícita desta equação. Poderia-se tentar uma outra explicação justificando que este termo é também o mais simples na equação de Navier-Stokes, mas o debate seria longo e eventualmente sem sentido, visto que muitas das principais dificuldades na resolução de campos de escoamento se originam justamente no termo advectivo. No que se segue abordaremos primeiro a forma linear e subsequentemente não-linear da advecção. Para concluir o capítulo realizaremos uma análise de estabilidade numérica do problema.
+
+Advecção pura -- em uma dimensão -- é o fenômeno que descreve a evolução de uma quantidade $\gls{u}$  transportada através de um campo de velocidade constante $\gls{c}$. Note que a quantidade $\gls{u}$ pode, em um caso mais geral que veremos mais tarde, ser um vetor velocidade. O transporte é expresso como $\gls{u}(\gls{x}, \gls{t}+\gls{dt})=\gls{u}(\gls{x}-\gls{c}\gls{dt}, \gls{t})$, o que indica simplesmente que o estado na coordenada $\gls{x}-\gls{c}\Delta\gls{t}$ após um intervalo de tempo $\gls{dt}$ será deslocado a coordenada $\gls{x}$, ou seja, para um campo de velocidade $\gls{c}$ constante o perfil de $\gls{u}$ é invariante. Para um intervalo de tempo $\gls{dt}$ suficientemente curto em relação as dimensões do sistema e a velocidade $\gls{c}$, essa expressão pode ser expandida em uma série de Taylor, o que conduz a equação diferencial parcial provida na equação \eqref{eq:pde-taylor-advection}.
+
+\begin{equation}
+\gls{u}(\gls{x},\gls{t})+\gls{dt}\odiff{u}{t}
+\simeq{}
+\gls{u}(\gls{x},\gls{t})-\gls{c}\gls{dt}\odiff{u}{x}
+\implies{}
+\pdiff{u}{t}+\gls{c}\pdiff{u}{x}=0
+\label{eq:pde-taylor-advection}
+\end{equation}
+
+Sob essas circunstâncias a equação \eqref{eq:pde-taylor-advection} possui uma solução analítica trivial, que pode ser desenvolvida através do método das características, mas isso encontra-se fora do presente escopo. Considere a condição inicial $\gls{u}_{0}:=\gls{u}(\gls{x},0)$, aonde o subscrito indica o instante inicial. O movimento descrito por $\gls{c}$ pode ser descrito em relação a essa condição inicial $\gls{u}(\gls{x},\gls{t})=\gls{u}_{0}(\gls{x}-\gls{c}\gls{t})$. No estudo de métodos numéricos é interessante partir de problemas que permitem uma forma analítica, o que é de grande ajuda para validar implementações e melhora o entendimento das equações.
+
+\section{Advecção linear}
+
+Diferentes estratégias de avaliação de derivadas espaciais foram apresentadas no capítulo \ref{ch:metodo-diferencas-finitas}. Para a formulação numérica por diferenças finitas da equação da advecção vamos prosseguir sem demonstrar que o esquema central no espaço não é adaptado para computar o termo advectivo por ser classificado neste caso como \emph{incondicionalmente instável}. Podemos, no entanto, compreender a origem física desta instabilidade pelo fato de que a \emph{informação} -- quantidade transportada -- viaja em conjunto com o campo advectivo. Não é possível na equação \eqref{eq:pde-taylor-advection} que um elemento em frente a quantidade propagada tenha \emph{conhecimento} da forma prévia da onda. É por essa razão que esquemas do tipo \emph{upwind} são aptos a avaliar numericamente o transporte advectivo. Nesta família de equemas, a \emph{informação} advinda da direção origem do fluxo advectivo é usada para avaliar as quantidades de interesse nas posições subsequentes. Por exemplo, para $\gls{c}>0$ a solução em $\gls{x}$ é avaliada à partir daquela em $\gls{x}-\gls{dx}$, logo a razão do nome \emph{upwind}. Vimos anteriormente que a aproximação desta derivada toma a forma da equação \eqref{eq:upwind-advection-term}.
+
+\begin{equation}
+\pdiff{u}{x}\approx
+\frac{\gls{u}(\gls{x})-\gls{u}(\gls{x}-\gls{dx})}{\gls{dx}}+\orderof{\gls{dx}}
+\label{eq:upwind-advection-term}
+\end{equation}
+
+A nota \ref{note:upwind-julia}...
+
+\begin{notebox}{Esquema \emph{upwind} em Julia.}{note:upwind-julia}
+
+Suponha que dispomos de um vetor \lstinline{u} contendo valores da solução do problema em um dado instante, com cada elemento de \lstinline{u} correspondendo a uma coordenada espacial $\gls{x}$. Para implementar a equação \eqref{eq:upwind-advection-term} em Julia podemos utilizar o seguinte código \emph{vetorizado}. Lembre-se que a base de indexação -- indice do primeiro elemento em vetores -- de Julia é 1 e não 0 como em Python ou C++. Nesta expressão a palavra-chave \lstinline{end} indica o último elemento do vetor.
+
+\begin{lstlisting}[language = julia, numbers = none]
+dudx = (u[2:end] - u[1:end-1]) / dx;
+\end{lstlisting}
+\end{notebox}
+
+---
+
+
 Vamos abordar neste tutorial a implementação de um integrador para a equação de
 advecção nas suas formas linear e não linear. Como este é o primeiro *bloco* da
 construção da equação de Navier-Stokes que almejamos alcançar ao final do livro
