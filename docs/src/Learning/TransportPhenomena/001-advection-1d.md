@@ -13,93 +13,103 @@ the linear and subsequently nonlinear form of advection. To conclude the
 chapter, we will perform a numerical stability analysis of the problem.
 
 Pure linear advection -- in one dimension -- is the phenomenon describing the
-evolution of a quantity ``{u}`` transported across a field of constant velocity
-``{c}``. Also notice that the quantity ``{u}`` may be the velocity field itself
-in a more general framework we will deal with later. Transport is expressed as
-``{u}({x},{t}+{\Delta{}t})={u}({x}-{c}{\Delta{}t},{t})``, what indicates simply
-that the state at ``{x}-{c}\Delta{t}`` will be found at position ``{x}`` after a
-time interval ``{\Delta{}t}``, *i.e.* for a constante velocity field ``{c}`` the
-profile ``{u}`` is invariant. For a very short time interval ``{\Delta{}t}``
-with respect to system length ``{L}`` and velocity ``{c}``, *i.e*
-``\Delta{}t\ll{}c^{-1}L``, this expression can be expanded as a Taylor series
-and one can derive the following equation:
+evolution of a quantity ``u`` transported across a field of constant velocity
+``c``. Also notice that the quantity ``u`` may be the velocity field itself in a
+more general framework we will deal with later. Transport is expressed as
+``u(x,t+\Delta{}t)=u(x-c\Delta{}t,t)``, what indicates simply that the state at
+``{x}-{c}\Delta{t}`` will be found at position ``x`` after a time interval
+``\Delta{}t``, *i.e.* for a constante velocity field ``c`` the profile ``u`` is
+invariant. For a very short time interval ``\Delta{}t`` with respect to system
+length ``L`` and velocity ``c``, *i.e* ``\Delta{}t\ll{}c^{-1}L``, this
+expression can be expanded as a Taylor series and one can derive the following
+equation:
 
 ```math
-{u}({x},{t})+{\Delta{}t}\frac{du}{dt}
+u(x,t)+\Delta{}t\dfrac{du}{dt}
 \simeq{}
-{u}({x},{t})-{c}{\Delta{}t}\frac{du}{dx}
+u(x,t)-c\Delta{}t\dfrac{du}{dx}
 \implies{}
-\frac{\partial{}u}{\partial{}t}+{c}\frac{\partial{}u}{\partial{}x}=0
+\dfrac{\partial{}u}{\partial{}t}+c\dfrac{\partial{}u}{\partial{}x}=0
 ```
 
 Under these conditions, the above equation has a trivial analytical solution
-that can be found by the method of characteristics, what is outside our scope
-here. Consider the initial condition ``{u}_{0}:={u}({x},0)`` (the subscript
+that can be found *e.g.* by the method of characteristics, what is outside our
+scope here. Consider the initial condition ``u_{0}:=u(x,0)`` (the subscript
 indicates the initial instant). The transport produced by the field ``{c}`` can
-be expressed in terms of this initial condition as
-``{u}({x},{t})={u}_{0}({x}-{c}{t})``. This result is important for the study of
-numerical methods because it allows for validation of implemented programs.
+be expressed in terms of this initial condition as ``u(x,t)=u_{0}(x-ct)``. This
+result is important for the study of numerical methods because it allows for
+validation of implemented programs.
 
-## Linear advection
-
-Para a formulação numérica por diferenças finitas da equação da advecção vamos prosseguir sem demonstrar que o esquema central no espaço não é adaptado para computar o termo advectivo por ser classificado neste caso como *incondicionalmente instável*. Podemos, no entanto, compreender a origem física desta instabilidade pelo fato de que a *informação* -- quantidade transportada -- viaja em conjunto com o campo advectivo. Não é possível na equação \eqref{eq:pde-taylor-advection} que um elemento em frente a quantidade propagada tenha *conhecimento* da forma prévia da onda. É por essa razão que esquemas do tipo *upwind* são aptos a avaliar numericamente o transporte advectivo. Nesta família de equemas, a *informação* advinda da direção origem do fluxo advectivo é usada para avaliar as quantidades de interesse nas posições subsequentes. Por exemplo, para ${c}>0$ a solução em ${x}$ é avaliada à partir daquela em ${x}-{dx}$, logo a razão do nome \emph{upwind}. Vimos anteriormente que a aproximação desta derivada toma a forma da equação \eqref{eq:upwind-advection-term}.
+Since our goal is the introduction to the computational aspects only, we skip a
+detailed numerical analyses showing that centered in space schemes are not
+suitable for the computation of space derivatives applied to advection equation
+since they exhibit an *unconditionally unstable* behavior. This is quite
+understandable from a physical standpoint because *information* is travelling
+along the velocity field, and *information* in front of the traveling wave
+cannot have any *knowledge* on the prior shape of the wave. That is why
+so-called *upwind* schemes are suitable for numerical computation of advection.
+In such family of schemes, the *information* coming from the origin of the
+advecting flow is used to evaluate the upcoming wave position, *i.e.* for ``c>0``
+the solution at ``x`` is computed from the solution at ``x-\Delta{}x``, thus the
+reason why it is called upwind, here ``\Delta{}x`` is a *finite* variation over
+coordinate ``x``. It can be shown through a Taylor series expansion truncated at
+first order that
 
 ```math
-\frac{\partial{}u}{\partial{}x}\approx
-\frac{{u}({x})-{u}({x}-{\delta{}x})}{{\delta{}x}}+\mathcal{O}{{\delta{}x}}
+\dfrac{\partial{}u}{\partial{}x}\approx
+\dfrac{u(x)-u(x-\delta{}x)}{\delta{}x}+\mathcal{O}{\delta{}x}
 ```
 
 !!! note "Upwind advection scheme"
 
-    Suponha que dispomos de um vetor \lstinline{u} contendo valores da solução do problema em um dado instante, com cada elemento de \lstinline{u} correspondendo a uma coordenada espacial ${x}$. Para implementar a equação \eqref{eq:upwind-advection-term} em Julia podemos utilizar o seguinte código \emph{vetorizado}. Lembre-se que a base de indexação -- indice do primeiro elemento em vetores -- de Julia é 1 e não 0 como em Python ou C++. Nesta expressão a palavra-chave \lstinline{end} indica o último elemento do vetor.
+    Suponha que dispomos de um vetor `u` contendo valores da solução do problema em um dado instante, com cada elemento de `u` correspondendo a uma coordenada espacial ``{x}``. Para implementar a equação \eqref{eq:upwind-advection-term} em Julia podemos utilizar o seguinte código \emph{vetorizado}. Lembre-se que a base de indexação -- indice do primeiro elemento em vetores -- de Julia é 1 e não 0 como em Python ou C++.
 
     ```julia
     dudx = (u[2:end] - u[1:end-1]) / dx;
     ```
 
-Vamos abordar neste tutorial a implementação de um integrador para a equação de
-advecção nas suas formas linear e não linear. Como este é o primeiro *bloco* da
-construção da equação de Navier-Stokes que almejamos alcançar ao final do livro
-texto, vamos clarificar alguns pontos sobre a metodologia que será empregada.
+Other higher order expansions are available in the literature, but they are not
+well-suited for an introductory course on numerical implementation of the
+solution of PDE's, so we stick with this low order approximation in what
+follows. An analogous expansion can be performed for the time derivative of the
+advection equation. Notice that for time the expansion is performed towards the
+*future*. This leads to the following space-time discretization to the problem
 
-O leitor que já tenha estudado o tópico através de outras fontes, como
-[CFDPython](https://github.com/barbagroup/CFDPython), mais conhecido como *12
-passos para Navier Stokes* vai observar que nossos códigos são mais estruturados
-e menos explícitos. Isso vem da nossa observação de que existe uma pletora de
-fontes instruindo o básico de programação científica, mas faltam fontes aonde
-não somente as equações são abordadas. É de nossa experiência o excesso de
-cientistas e engenheiros que vieram a aprender a estruturar um programa
-tardivamente, o que resulta em uma infinidade de repositórios com código que,
-embora às vezes funcional, é praticamente impossível de se realizar a manutenção
-ou mesmo utilizar.
+```math
+\frac{u(t+\Delta{}t)-u(t)}{\Delta{}t}+c\frac{u(x)-u(x-\Delta{}x)}{\Delta{}x}=0
+```
 
-Dessa crítica ao *status quo*, vamos ao longo desta série não somente resolver
-os problemas de uma ótica numérica, mas também progressivamente *pensar antes de
-programar* a forma do programa que desejamos conceber. O estudante que se
-engajar nessas práticas sem a menor dúvida terá uma carreira técnica de maior
-sucesso e performance que os demais.
+This approximate representation of the advection PDE is difficult to read and
+distant from what it would look in a computer, where it can be represented
+through indexed arrays or matrices. It is common in the FDM to use subscripts
+for denoting space indices, and superscript for time-steps. This way we
+translate ``t+\Delta{}t`` as ``n+1``, where ``n`` is the time-step number, and
+``x-\Delta{}x`` becomes ``i-1``, where ``i`` is the index of the FDM space
+coordinate node. Also it is useful to maker shorthands ``\tau=\Delta{}t`` and
+``\delta=\Delta{}x``. The equation becomes
 
-Aqui nos deparamos com um primeiro *conundrum*: uma interface interativa como
-Pluto não é o meio ideal para se conceber um programa a ser mantido ao longo dos
-anos. Esse tipo de documento é perfeito para realizar demonstrações e usar
-interfaces de implementações mais complexas fornecidas através de pacotes. Vamos
-nesse primeiro momento ignorar esse fato porque, embora buscamos transmitir o
-conhecimento de como conceber um programa de qualidade, seríamos frustrados por
-uma tentativa de ensinar isso diretamente com a concepção de pacotes, tema que é
-abordado anexamente ao livro texto.
+```math
+\frac{u_{i}^{n+1}-u_{i}^n}{\tau}+c\frac{u_{i}^n-u_{i-1}^n}{\delta}=0
+```
 
-No que se segue neste *notebook* (vamos aceitar este anglicismo eventual ao
-longo do texto) e nos subsequentes adotaremos uma estrutura típica. Começamos
-com uma descrição do problema que desejamos resolver a as funcionalidades
-almejadas. Com isso podemos pensar nas ferramentas que vamos necessitar e como
-dita a boa prática importá-las logo no início do programa. Em seguida provemos
-todo o código que é auxiliar ao problema numérico, como por exemplo a geração de
-gráficos, de maneira a eliminar suas interferências na leitura do código
-principal. Finalmente concebemos o código com o conteúdo matemático abordado e
-seguimos com um programa de aplicação. Essa forma será empregada nos demais
-*notebooks* sem que tenhamos que repetir essa descrição.
+Our goal of approaching the equation to the computer implementation format has been reached. So far we are only considering fixed time-steps ``\tau`` and node distances ``\delta``, and constant advection velocity ``c``, thus there are still a three constants hanging around. Since problem initial state is *a priori* knowledge for PDE integration, at ``n=0`` and ``\forall{}i`` we dispose of the state ``u_{i}^{n}=u_{i}^{0}``, so the only unknown in the above equation is ``u_{i}^{n+1}``, for which it can be solved
+
+```math
+u_{i}^{n+1}=(1-\alpha)u_{i}^{n}+\alpha{}u_{i-1}^n
+```
+
+Such approximation that makes use of current state to predict a future one is called an *explicit* time-stepping scheme and has been implied without explanation in the above discretization approach. With this expression we have the complete mathematical tooling to solve the simplest advection equation. Notice that for ``c<0`` the direction of the upwind space derivative would change and the solution becomes ``u_{i}^{n+1}=(1+\alpha)u_{i}^{n}-\alpha{}u_{i+1}^n``.
+
+Now suppose we want to solve advection of a given wave over a 1-D space domain.
+The discrete solution derived above provides most information we need to gather
+before starting to develop a computer solution, but it says nothing about the
+sizes of discrete steps ``\tau`` and ``\delta``. For now we rely only on the
+mathematical background we have on Taylor series expansion to think about it,
+and we postpone the methods of computing suitable steps for later. .
 
 ## Required tools
+
+In what follows we focus on the computer implementation of the problem. For the implementation of the equations in a vectorized form, since Julia is a language conceived for scientific computing, all the tooling is already available. In this study, to ensure the physical consistency of derived equations and their correct implementation, we will provide numerical values with units through *u-strings* provided by package [`Unitful`](https://painterqubits.github.io/Unitful.jl/stable/). Please note that this could represent some overhead in large scale problems, so it is important to keep the code compatible with purely numerical values when implementing packages. For all the visualizations we will make use of [`CairoMakie`](https://docs.makie.org/stable/).
 
 ```@example global
 using Unitful
@@ -112,11 +122,13 @@ using CairoMakie
 abstract type AbstractAdvection end
 ```
 
+The solution loop is straightforward: we store the current state and solve over the same array the next time solution, what constitutes a simple explicit *Euler* time-stepping scheme. Since Julia supports vectorized operations we use the slice syntax to evaluate ``(1-\alpha)u_{i}^{n}+\alpha{}u_{i-1}^n`` and attribute it elementwise to ``u_{i}^{n+1}``. Notice that element `u[1]` is never updated here, think for a moment what are the implications of this.
+
 ```@example global
 function integrate!(p::AbstractAdvection)::Nothing
     for (k, t) in enumerate(p.t[1:end-1])
         # Uncomment below to check correct stepping:
-        # @info "Advancing from $t to $(p.t[k+1])"
+        # @info "Advancing from ``t to ``(p.t[k+1])"
         p.M[k, :] = copy(ustrip(p.u))
         step!(p)
     end
@@ -125,6 +137,8 @@ function integrate!(p::AbstractAdvection)::Nothing
     return nothing
 end
 ```
+
+**Note:** method `ustrip` from `Uniful` was used to remove units from arrays before plotting because their rendering is not converted to ``\LaTeX`` in axes.
 
 ```@example global
 function plotstate(p::AbstractAdvection)::Figure
@@ -149,6 +163,8 @@ end
 It is also interesting to provide a function to visualize space solution over
 time. This is the job of a [kymograph](https://en.wikipedia.org/wiki/Kymograph),
 which is provided below.
+
+Because they will be reused several times in this chapter, we wrap the kymograph and comparison plotting in the functions given below. It is generally a good idea to follow some [DRY directives](https://en.wikipedia.org/wiki/Don%27t_repeat_yourself), but care must be take not to create new methods for simple one-liners, which could become hard to maintain later.
 
 ```@example global
 function kymograph(p::AbstractAdvection; xticks, yticks, zticks)::Figure
@@ -176,6 +192,21 @@ end
 ```
 
 ## Linear advection
+
+Knowing the nodal distance ``\delta``, there are many ways of allocating the initial state for ``u``, the most computationally efficient being allocating an array with the right number of nodes, them using multiples of ``\delta`` to attribute the value at each cell. We will not proceed this way here. Instead we provide `ranges` representing both space and time nodes. Notice that Julia does not expand these ranges, you need to `collect` them manully or use them in interation loops.
+
+
+Because we need to *know* the nodal positions to compute initial state, we already collect the vector. The first 5 elements are displayed. By `x[1:5]` we remember that Julia indexing system starts at `1` and the slicing `1:5` includes the last index, what would not be true in Python, for instance.
+
+
+For allocating arrays of same shapes, Julia provides the method `similar`. Since we are using units with our values, that method cannot be used here with array for ``x`` to allocate the density array ``u``, otherwise the result would carray space dimensions. Instead we create a `ones` array of appropriate numerical type and dimensions and provide it with units carried by ``u_{0}``. Notice that this initializes the whole array with the value found in the square wave.
+
+
+With all this elements we prepare the solution. We start by computing the constant ``\alpha`` known as *Courant number*. Observe that this is a dimensionless number since it results from the product of a velocity by the inverse of a *numerical velocity*. Depending on the choice of derivative approximations there may be a upper limit for which the numerical integration will be *stable*. We are not entering in these details yet, for now you can read more about this [here](https://en.wikipedia.org/wiki/Courant%E2%80%93Friedrichs%E2%80%93Lewy_condition) to get a taste of the numerical analysis to come.
+
+In the present case we might want to store the solution of all time steps for performing an animation or display a kymograph, what will be the case here. For small to medium sized problems, it is more effecient to allocate the memory for solution storage ahead of time, especially when working with fixed time steps. For larger problems or variable time step size, it is sometimes necessary to allocate memory for part of the solution and from times to times dump current chunk to the disk, or handle a buffer with limited memory.
+
+Since this is a very simple 1-D problem, we chose to have a matrix will one row per time step, so its dimensions are ``n_t\times{}n_x``, as follows.
 
 ```@example global
 struct LinearAdvection1D <: AbstractAdvection
@@ -214,33 +245,16 @@ end
 
 ## Problem statement
 
-Considere um domínio hipotético de comprimento $L=2.5\:\mathrm{m}$ na direção do
-eixo $x$ sobre o qual temos uma *onda de uma substância insolúvel* localizada
-nas coordenadas $x\in[0.5;1.0]\:\mathrm{m}$ movendo-se a
-$u=1\:\mathrm{m\cdotp{}s^{-1}}$ e sendo a metade deste valor no restante do
-espaço. No instante inicial $t=0\:\mathrm{s}$ um fluxo de fluido com velocidade
-constante $c=1\:\mathrm{m\cdotp{}s^{-1}}$ é força através do domínio, o qual já
-se encontra imerso no fluido.
+Consider a hypothetical domain of ``L=2.5\:\mathrm{m}`` along along ``x`` axis over which we have initially a wave of an *unsoluble substance* moving at to ``u=1\:\mathrm{m\cdotp{}s^{-1}}`` located in interval ``x\in[0.5;1.0]\:\mathrm{m}``, being half this value elsewhere. At the starting time, a fluid flow with velocity ``c=1\:\mathrm{m\cdotp{}s^{-1}}`` is forced through the domain, which is already immersed in the *fluid*.
 
 ---
 
-Determine a posição e velocidade $u(x,t)$ da substância no intervalo de
-$T=1.0\:\mathrm{s}$ que se segue.
+Determine the mass density ``u(x,t)`` of the substance for the next ``T=1.0\:\mathrm{s}`` interval.
 
 ---
 
-Com esses elementos temos a descrição suficiente do problema para iniciar a sua
-tranposição na forma de código com Julia. Para asseguramos a consistência física
-do problema vamos utilizar valores numéricos acompanhados de unidades providas
-pelo pacote [Unitful](https://painterqubits.github.io/Unitful.jl/stable/).
+This problem statement provides all the basic building blocks to implement the solution, which we translate into Julia code as:
 
-**Nota:** em problemas de larga escala essa abordagem talvez traga
-inconvenientes de sobrecarga computacional, no entanto é recomendado que se
-concebam programas compatíveis com `Unitful` para a verificação de consistência
-em casos de teste.
-
-Na próxima célula provemos todos os elementos numéricos presentes na descrição
-do problema.
 
 ```@example global
 # Domain length.
@@ -264,14 +278,16 @@ end
 nothing # hide
 ```
 
+To modify the regions ouside the peak we create a boolean mask. In Julia, to evaluate a binary operation elementwise, a dot is placed in front of the operator. So here `xᵤ[1] .< x` means true where elements of `x` are less than the first element of `xᵤ`, for instance. Since the mask we created represent the square wave region, we negate the resulting array to set zero elsewhere in the density array `u`. Also observe the `.=` notation to attribute results. This vectorized operations supported by Julia avoid the excessive use of loops and result in easier to maintain code.
+
 ## Solve linear advection
 
 To remain within the region where the error introduced by the discretization
 scheme remains *small*, we need to *think* what would be a good number of steps
 and nodes to split our system. Thinking physically, we would not want the
-density $u$ to be transported by more than one node distance $\delta$ in a time
-step $\tau$, otherwise we would be *skipping* information transfer. Thus, there
-is some logic constraining $\delta\le{}c\tau$ to be respected here. We also have
+density ``u`` to be transported by more than one node distance ``\delta`` in a time
+step ``\tau``, otherwise we would be *skipping* information transfer. Thus, there
+is some logic constraining ``\delta\le{}c\tau`` to be respected here. We also have
 infinite gradients in the specified square wave of mass density, so space step
 should not be too small otherwise it would lead to a overflow error..., well,
 there are many other aspects to be considered, but we did not introduce them
@@ -280,7 +296,7 @@ discretization must be reasonably smaller than the integration domains*.
 
 Below we assume this *reasonably small* criterium is 1/500 the size of the
 system and compute the required nodal distance and time step. Notice the `- 1`
-in the denominator, because the number of intervals between $k$ nodes is $k-1$.
+in the denominator, because the number of intervals between ``k`` nodes is ``k-1``.
 The computed values are displayed with their respective units.
 
 ```@example global
@@ -289,6 +305,8 @@ nₜ = 101
 p1 = LinearAdvection1D(L, T, c, nₓ, nₜ; init)
 nothing # hide
 ```
+
+Below we display a comparison between initial and final states of the advected wave.
 
 ```@example global
 plotstate(p1) # hide
@@ -300,7 +318,48 @@ kymograph(p1; xticks = 0.0:0.5:ustrip(L), # hide
               zticks = 0.5:0.1:1.0)  # hide
 ```
 
+The analytical solution to this problem states that the shape of the density profile should not evolve in time, just its position. In the kymograph above that would mean that the only valid values in the heat map would be those originally in the initial state array. This is not actually what we observe. We get just qualitative agreement between the expected and actual position of our moving hump ``u``, which apparently *diffused* over the domain. And this exaclty what happened, from a numerical standpoint. When we approximated the spacial derivative, we were actually truncating a Taylor series expansion of ``u`` at the first term, as in:
+
+```math
+u(x) = u(x-\Delta{}x) + \frac{(\Delta{}x)^{1}}{1!}\frac{\mathrm{d}u}{\mathrm{d}x} +
+                        \frac{(\Delta{}x)^{2}}{2!}\frac{\mathrm{d}^{2}u}{\mathrm{d}x^{2}} +
+                        \mathcal{O}((\Delta{}x)^{3})
+```
+
+so that the derivative we approximated was in fact:
+
+```math
+\frac{u(x) - u(x-\Delta{}x)}{\Delta{}x} = 
+    \frac{\mathrm{d}u}{\mathrm{d}x} +
+    \frac{(\Delta{}x)}{2!}\frac{\mathrm{d}^{2}u}{\mathrm{d}x^{2}} +
+    \mathcal{O}((\Delta{}x)^{2}) =
+    \frac{\mathrm{d}u}{\mathrm{d}x} +
+    \mathcal{O}((\Delta{}x)^1)
+```
+
+Our numerical approximation to the first derivative implicitly contains a *diffusion* term in the truncation error! The same is valid for the time derivative. We could use higher order schemes but always there will be some numerical diffusion in upwind schemes for convection. From the expression above we see that this diffusion term is proportional to ``\Delta{}x``, so increasing the number of points in space could be a solution, but this can become prohibitive in real-world 3-D problems.
+
+### Exercises
+
+1. Solve the problem with an increasingly larger number of space nodes and plot the MSE of the difference between the numerical and analytical solutions. What kind of behavior do you observe? Is there any limiting value for the number of nodes under constant time discretization? Discuss your findings.
+
+2. Increase the integration interval to ``T=3\:\mathrm{s}`` and adapt problem solution to handle periodic boundary conditions. Does the meaning of space coordinates remain the same all over the array? Do not forget to use an adequate number of time steps for keeping solution stable.
+
 ## Nonlinear advection
+
+In order to introduce more complex phenomena, we modify the advection equation so that there is no external field transporting the wave but itself. In this case the previous ``c`` is replaced by ``u`` and the equation writes
+
+```math
+\frac{\partial{}u}{\partial{}t} + u \frac{\partial{}u}{\partial{}x} = 0
+```
+
+Applying the same approach and symbol convention used before, we can find that
+
+```math
+u_{i}^{n+1}=(1-\alpha_{i})u_{i}^{n}+\alpha_{i}u_{i-1}^n\qquad\text{where}\qquad\alpha_{i}=\frac{\tau}{\delta}u_{i}^{n}
+```
+
+As an example we solve the transport of the same wave integrated in linear advection example with a self-advective transport instead. Other than a small rearrangement in the equation there are no changes in the time-stepping.
 
 ```@example global
 struct NonlinearAdvection1D <: AbstractAdvection
@@ -337,6 +396,8 @@ p2 = NonlinearAdvection1D(L, T, nₓ, nₜ; init)
 nothing # hide
 ```
 
+Analysing the ``u\cdotp{}u^\prime`` term in the nonlinear advection equation we see that it has units of acceleration. Because now the transport coefficient is the local velocity itself, different locations accelerate at different rates, leading to the *shock wave* phenomenon. Below we compare the initial and final waves.
+
 ```@example global
 plotstate(p2) # hide
 ```
@@ -346,5 +407,9 @@ kymograph(p2; xticks = 0.0:0.5:ustrip(L), # hide
               yticks = 0.0:0.2:ustrip(T), # hide
               zticks = 0.5:0.1:1.0) # hide
 ```
+
+### Exercises
+
+1. It is possible use the product derivative rule to replace ``u\cdotp{}u^\prime=½(u^2)^\prime`` in advection equation, what is known as its *conservative* form. How would you implement this in Julia and what are the implications of this on solution in terms of space and time discretization? Provide some numerical examples.
 
 For playing with the code, please find a [Pluto notebook here](001-advection-1d.jl).

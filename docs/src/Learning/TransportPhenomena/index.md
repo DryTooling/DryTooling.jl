@@ -8,9 +8,13 @@ goal must be seen not only as reaching the implementation of Navier-Stokes
 equations, but learning the key ideas of finite differences before learning more
 advanced and general numerical methods. Students who are undergoing Calculus
 training should already meet the minimum requirements to follow this course.
+
 Focus will be given not only on the numerical methods, but also how a computer
 implementation should look like. This last point is the most distinctive point
-from the work upon which it is based.
+from the work upon which it is based. A vast amount of learning resources is
+available for scientific computing, but rare sources really provide guidance for
+conceiving quality and maintainable code. Here we try to contribute for better
+coding practices through a *think-before-coding* approach.
 
 ## Contents
 

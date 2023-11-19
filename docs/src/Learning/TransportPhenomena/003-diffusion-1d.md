@@ -1,3 +1,440 @@
+# Diffusion in 1-D with finite difference method
+
+```{code-cell}
+using Plots;
+# using Printf;
+# using Unitful;
+```
+
+```{code-cell}
+
+```
+
+```{code-cell}
+
+```
+
+```{code-cell}
+
+```
+
+```{code-cell}
+
+```
+
+# Introduction to diffusion (Part A)
+
+
+## Diffusion equation 1-D with finite differences
+
+Diffusion is a process that arises when a flow of a given quantity is induced by a gradient of its content, what is a direct response to second law of Thermodynamics. Under such circunstances, we often denote the flux vector $\vec{J}$ of quantity $u$ as given in the following equation, where $\nu$ is a transport coefficient. This empirical relationship has been shown to hold under several cases, constituting what is called *Fourier's law* in heat transfer and *Fick's first law* in mass transfer.
+
+$$
+    \vec{J}=-\nu{}\nabla{}u
+$$
+
+In this notebook we introduce the 1-D case of diffusion equation, thus the gradient is replaced by the derivative of $u$ over $x$ axis. To compute the time evolution of $u$ in a point of space in the absence of a source term, one simply aply the divergent operator (special case of Reynolds transport theorem without source) over the flux above which can be interpreted as
+
+<center>
+<bold>[ Inlet ] - [ Outlet ] + [ Creation == 0 ] = [ Accumulation rate ]</bold>
+</center>
+
+Applying this to the case where the creation rate is null (no source term) is equivalent to take the divergent of the flux. In the case the transport coefficient depends on position or in the transported quantity itself, this leads to the following nonlinear form of the diffusion equation, which we will study later in this notebook series:
+
+$$
+    \frac{\partial u}{\partial t}=\frac{\partial{}}{\partial{}x}\left[\nu(x, u)\frac{\partial{}u}{\partial{}x}\right]
+$$
+
+For the case of constant transport coefficient $\nu$, we finally get the expression that we study here:
+
+$$
+    \frac{\partial u}{\partial t}= \nu \frac{\partial^2{}u}{\partial{}x^2}
+$$
+
+
+### Second derivative computation
+
+A second derivative of a function requires more information than the first one, since it represents the rate of change of a derivative. As a first strategy to compute the right-hand side of diffusion equation, let's take the Taylor series expansion of function $u$ around a given element $u_{i}$. We use this to produce both the next and previous elements in 1-D space, $u_{i+1}$ and $u_{i-1}$
+
+$$
+    u_{i+1} = u_i + \Delta x \frac{\partial u}{\partial x}\bigg|_i + \frac{\Delta x^2}{2} \frac{\partial ^2 u}{\partial x^2}\bigg|_i + \frac{\Delta x^3}{3!} \frac{\partial ^3 u}{\partial x^3}\bigg|_i + O(\Delta x^4)
+$$
+
+$$
+    u_{i-1} = u_i - \Delta x \frac{\partial u}{\partial x}\bigg|_i + \frac{\Delta x^2}{2} \frac{\partial ^2 u}{\partial x^2}\bigg|_i - \frac{\Delta x^3}{3!} \frac{\partial ^3 u}{\partial x^3}\bigg|_i + O(\Delta x^4)
+$$
+
+As you may notice in the equations above, the sign of odd terms cancel. Adding up these expressions is a straighforward means of getting only even terms in the series, thus the second derivative.
+
+$$
+    u_{i+1} + u_{i-1} = 2u_i+\Delta x^2 \frac{\partial ^2 u}{\partial x^2}\bigg|_i + O(\Delta x^4)
+$$
+
+After manipulation for isolating the second derivative one produces the second order accurate scheme:
+
+$$
+    \frac{\partial ^2 u_{i}}{\partial x^2}=\frac{u_{i+1}-2u_{i}+u_{i-1}}{\Delta x^2} + O(\Delta x^2)
+$$
+
+### Explicit formulation
+
+In the previous notebooks we have established the convention of using a superscript to denote the discrete time index. Computing the right-hand side of the diffusion equation at instant $n$ to predict $n+1$ produces the *explicit* formulation. For brevity we start using $\tau=\Delta{}t$ and $\delta=\Delta{}x$.
+
+$$
+    \frac{u_{i}^{n+1}-u_{i}^{n}}{\tau}=\nu\frac{u_{i+1}^{n}-2u_{i}^{n}+u_{i-1}^{n}}{\delta^2}
+$$
+
+Again, as we have done for the convection equation, $u^{n+1}$ can be promptly solved from $u^{n}$ at all positions:
+
+$$
+    u_{i}^{n+1}=u_{i}^{n}+\frac{\nu\tau}{\delta^2}(u_{i+1}^{n}-2u_{i}^{n}+u_{i-1}^{n})=
+    (1-2\alpha)u_{i}^{n}+\alpha(u_{i+1}^{n}+u_{i-1}^{n})
+    \qquad\text{where}\qquad{}\alpha=\frac{\nu{}\tau{}}{\delta^2}
+$$
+
+### Stability analysis
+
+As we have seen in last notebook, the stability criterium for a formulation can be established through von Neumann analysis. To do so, we make use of the error scaling factors $\hat{\varepsilon}^{n}(k)\exp{(ikp\Delta{}x)}$ as a replacement of every $u$ in the above equation. Remember that for compatibility with imaginary unity, subindices were replaced by $p$ here, and the good value of $p$ must be used for each term. After manipulation we retrieve the amplification factor $g(k)$ that is independent of the position (try doing the full demonstration):
+
+$$
+g(k)=(1-2\alpha) + \alpha[\exp(ik\delta)+\exp(-ik\delta)]
+$$
+
+The right-hand side can be simplified through Euler's formula $\exp(\pm{}ix)=\cos(x)\pm{}i\sin(x)$. This leads to elimination of the sinuses from the equation, which now can be simplified as:
+
+$$
+g(k)=1+2\alpha\left[\cos(ik\delta)-1\right]
+$$
+
+Stability is assured when $\vert{}g(k)\vert\le{}1$ for any $k$. It can be shown (it is left for the reader to demonstrate), that this is possible for $\alpha\le\frac{1}{2}$. From now on we consider the derived criterium for the coding activities.
+
+### Sample case
+
+As we did when studying convection for the first time, our sample case will be started witn a hump in the middle of the domain, as per the statement below. The most important difference that is emphasized from now on is that since we are aware of stability criterium, time-step will be chosen to respect it. The code is provided with a flag for override the bounding of time-step allowing to investigate the effect of unstable regions of $\alpha$. In all cases, unity diffusion coefficient $\nu=1$ will be employed for simplicity.
+
+$$
+\begin{cases}
+u=1 & x\in[0.75;\, 1.25]\\
+u=0 & \text{elsewhere}
+\end{cases}
+$$
+
+The next function provides the integration of the problem with the previously defined numerical scheme using NumPy array slicing to allow the computation of derivative in all internal domain elements. Notice that until the present we have not yet discussed boundary conditions and the next example is equivalent to a constant value over boundaries (Dirichlet condition, as we will see later in the series).
+
+
+```python
+def problem_diffusion_linear(u, dx, t_end, alpha_max):
+    """ Explicit solution of 1-D diffusion problem.
+    
+    Parameters
+    ----------
+    u : np.ndarray
+        Array quantity over 1-D grid of step `dx`.
+    dx : float
+        Grid spacing in 1-D domain.
+    t_end : float
+        Final integration time.
+    alpha_max : float
+        Value of alpha for initial time-step calculation.
+        
+    Returns
+    -------
+    np.ndarray
+        Solution array with quantity `u` at `t_end`.
+    """
+    # Constant diffusion coefficient.
+    nu = 1.0
+    
+    # Compute dx**2 only once.
+    dx2 = dx ** 2
+
+    # Maximum stable time-step.
+    dt = alpha_max * dx2 / nu
+    
+    # Initialize time.
+    t = 0.0
+
+    # Time loop until end.
+    while t < t_end:
+        # Bound time step for ending.
+        dt = min(dt, t_end - t)
+        
+        # Increase solution time.
+        t += dt 
+
+        # Compute explicity solution
+        alpha = nu * dt / dx2
+        u[1:-1] += alpha * (u[2:] - 2.0 * u[1:-1] + u[:-2])
+        
+        if abs(t - t_end) <= 1.0e-08:
+            return u
+```
+
+For allowing multiple calculations with same initial condition but different grids, we provide a simple function for allocation and computation of initial conditions and space discretization. This function will be used as a parameter of our simulation study, so different cases can be investigated.
+
+
+```python
+def get_initial_conditions_sample1(nx):
+    """ Allocate x, u, and set initial state. """
+    x, dx = np.linspace(0.0, 2.0, nx, retstep=True)
+    u = np.zeros(nx, dtype=np.float64)
+    u[((x >= 0.75) & (x <= 1.25))] = 1.0
+    return x, u, dx
+```
+
+Finally we wrap the problem in a function to study the effect of alpha and integration time for a given fixed set of number of nodes in space. This function creates a plot of initial state and results for reference.
+
+
+```python
+def simulate_for_alpha(alpha, initialize, t_end=1.0e-03, bound_alpha=True):
+    """ Simulate problem for a given `alpha`.
+    
+    Parameters
+    ----------
+    alpha : float
+        Critical value of `alpha` to use in calculation.
+    t_end : float
+        Final integration time for studying effect of boundaries.
+    bound_alpha : bool
+        If `True`, ensure stability criterium.
+    """
+    plt.close('all')
+    plt.style.use('bmh')
+    plt.figure(figsize=(8, 4), dpi=100)
+
+    if bound_alpha:
+        alpha = min(alpha, 0.5)
+    
+    x, u, _ = initialize(5000)
+    plt.plot(x, u, drawstyle='steps', label=F'Initial')
+
+    t0 = perf_counter()
+    for nx in [20, 200, 2000]:
+        x, u, dx = initialize(nx)
+        u = problem_diffusion_linear(u, dx, t_end, alpha)
+        plt.plot(x, u, drawstyle='steps', label=F'nx={nx}')
+
+    delay = perf_counter() - t0
+    title = F'All simulations took {delay:.2f} s'
+    
+    plt.title(title)
+    plt.xlabel('Position [m]')
+    plt.ylabel('Quantity [a.u.]')
+    plt.xlim(0.0, 2.0)
+    plt.legend()}
+    plt.tight_layout()
+```
+
+In the next cell we present the solution for the critical value of alpha that has been found in *von Neumann* stability analysis.
+
+
+```python
+simulate_for_alpha(0.5, get_initial_conditions_sample1)
+```
+
+As you observe in the plot above, with 2000 nodes in grid a pretty smooth solution starts to be produced with the given conditions. For 20 nodes, the problem is not even centered because of the placement of initial state in that case.
+
+The next cells are an invitation for you to experiment with different parameters in the simulation. Take care with `t_end` as it can be pretty long to compute the solution with 2000 nodes in the grid.
+
+
+```python
+# simulate_for_alpha(1.0, get_initial_conditions_sample1, bound_alpha=False)
+```
+
+
+```python
+# simulate_for_alpha(0.5, get_initial_conditions_sample1, t_end=1.0e-01)
+```
+
+What if we have multiple humps (see them as particles being dissolved) in the system? Well, check below! This is a pretty common application case of diffusion in solid state and stationary liquids that is worth understanding.
+
+
+```python
+def get_initial_conditions_sample2(nx):
+    """ Allocate x, u, and set initial state. """
+    x, dx = np.linspace(0.0, 2.0, nx, retstep=True)
+    u = np.zeros(nx, dtype=np.float64)
+    u[((x >= 0.20) & (x <= 0.40))] = 2.0
+    u[((x >= 0.70) & (x <= 1.00))] = 1.0
+    u[((x >= 1.50) & (x <= 1.60))] = 3.0
+    return x, u, dx
+```
+
+
+```python
+simulate_for_alpha(0.5, get_initial_conditions_sample2, t_end=5.0e-03)
+```
+
++++
+
+# Introduction to diffusion (Part B)
+
+## Introduction to implicit formulations
+
+Contrary to the *explicit* formulation, in the *implicit* case we compute the spacial derivatives in instant $n+1$. In this case simple algebraic solution is no longer possible, as we show in what follows. Replacing $n$ by $n+1$ in the superscripts on the right-hand side of the *explicit* formulation produces the *implicit* scheme. In fact, any of the previous models could have been treated this way. The main advantage of *implicit* schemes is the stability, as it will be shown later.
+
+$$
+    \frac{u_{i}^{n+1}-u_{i}^{n}}{\tau}=\nu\frac{u_{i+1}^{n+1}-2u_{i}^{n+1}+u_{i-1}^{n+1}}{\delta^2}
+$$
+ 
+After manipulating the above expression to split the different instants at different sides of the equation we produce the next expression. Observe the linear coupling of different elements at $n+1$: *we have a linear system of equations instead of single algebraic equations* and the solution of the system is required for advancing the integration in time.
+
+$$
+-\alpha{}u_{i-1}^{n+1} + (1 + 2\alpha) u_{i}^{n+1} - \alpha{}u_{i+1}^{n+1}=u_{i}^{n}
+\qquad\text{where}\qquad{}\alpha=\frac{\nu{}\tau{}}{\delta^2}
+$$
+
+This expression holds for all elements in the interior of 1-D space. Boundary elements deserve special treatment as we will see in what follows (*e.g.* at position $i=0$, does index $i-1=-1$ make sense? You are outside the domain!). In matrix form the above equation produces the following tridiagonal linear system (boundary terms not yet implemented):
+
+$$
+\begin{bmatrix}~1+2\alpha& -\alpha& ~0& ~0& ~0& \ldots &~0\\[2pt] -\alpha&~1+2\alpha&-\alpha&~0&~0&\ldots &~0\\[2pt] ~0&-\alpha&~1+2\alpha&-\alpha&~0&\ldots &~0\\[2pt] \vdots &\vdots &\vdots &\vdots &\vdots &\ddots &\vdots \\[2pt] ~0&\ldots &~0&-\alpha&~1+2\alpha&-\alpha&~0\\[2pt] ~0&\ldots &\ldots &~0&-\alpha&~1+2\alpha&-\alpha\\[2pt] ~0&\ldots &\ldots &\ldots &~0&-\alpha&~1+2\alpha\end{bmatrix}\cdotp\begin{bmatrix}u^{n+1}_{0}   \\[2pt]u^{n+1}_{1}   \\[2pt] u^{n+1}_{2}   \\[2pt] \vdots        \\[2pt]
+u^{n+1}_{N-3} \\[2pt] u^{n+1}_{N-2} \\[2pt] u^{n+1}_{N-1} \\[2pt] \end{bmatrix} = \begin{bmatrix} u^{n}_{0}   \\[2pt] u^{n}_{1}   \\[2pt] u^{n}_{2}   \\[2pt] \vdots      \\[2pt] u^{n}_{N-3} \\[2pt] u^{n}_{N-2} \\[2pt] u^{n}_{N-1} \\[2pt]\end{bmatrix}
+$$
+
+So finally we have that the solution of the implicit formulation using matrix boldface notation can be done as follows:
+
+$$
+    \mathbf{M}\cdotp\mathbf{u}^{n+1}=\mathbf{u}^{n}\implies{}
+    \mathbf{u}^{n+1}=\mathbf{M}^ {-1}\mathbf{u}^{n}
+$$
+
+### Stability analysis
+
+Following the same steps from Part A of this chapter, *i.e.* replacing each $u^{m}_{p}=\hat{\varepsilon}^{m}(k)\exp{(ikp\Delta{}x)}$ with proper $m$ and $p$ replacement, we find the error amplification factor $g(k)$, which for the *implicit* scheme takes the form:
+
+$$
+    g(k)=\frac{1}{1-2\alpha\left[cos(k\Delta{}x)-1\right]}=
+    \frac{1}{1+4\alpha\sin^{2}(k\Delta{}x)}
+$$
+
+The value of $\sin^{2}(k\Delta{}x)\ge{}0\implies{}\vert{}g(x)\vert\le{}1$, what implies that the *implicit scheme is unconditionally stable*, meaning that any combination of time and space steps will lead to a finite error. Nonetheless, this does not mean the values are accurate, since the truncation error is the same as the explicit scheme, leading to a first-order accuracy in $x$.
+
+### Boundary conditions
+ 
+We have delayed the derivation of boundary conditions to this point. This is because now we have already seen different equations and the difference of *explicit* and *implicit* schemes. Now we concentrate of how to ensure the PDE boundary conditions as required by a real-world problem. For an *explicit* scheme this can be as trivial as not solving the equation for the first and last element to keep them constant, what would constitue a Dirichlet boundary condition. For *implicit* schemes, the derivation is far more complex, and include modifications in the coefficient matrix $\mathbf{M}$ and to the right-hand side.
+
+**Dirichlet:** this type of boundary condition is characterized by the time-constancy of the boundary node, using dot notation for time-derivative $\dot{u}\vert_{x=0}=0\:\forall{}t\in{}\Re$. That means that the left hand side of diffusion equation is to be held constant at that position. In order to derive this condition, one may write the first equation of the system as follows, where index $i=-1$ is a *ghost* node, a purely numerical feature used to help the derivation of the boundary condition.
+
+$$
+    -\alpha{}u^{n+1}_{-1}+(1+2\alpha)u^{n+1}_{0}-\alpha{}u^{n+1}_{1}=u^{n}_{0}
+$$
+
+Holding this *ghost* node constant and equal to the boundary value $u_{b}$, the first equation of the problem is then writen as $(1+2\alpha)u^{n+1}_{0}-\alpha{}u^{n+1}_{1}=u^{n}_{0}+\alpha{}u_{b}$. As such, the matrix form of the problem is modified to $\mathbf{u}^{n+1}=\mathbf{M}^ {-1}\left(\mathbf{u}^{n}+\mathbf{u}_{b}\right)$.
+
+**Neumann:** also known as the specified flux condition, is given by $\nu{}u^{\prime}\vert_{x=0}=h$, where we use a prime notation for derivatives in space. We seek now a *ghost* element ensuring the respect of the flux over $u_{0}$. One alternative is to take a centered derivative around this node to represent the boundary condition.
+
+$$
+    \nu\frac{u_{1}-u_{-1}}{2\delta}=h\qquad\implies\qquad{}
+    u_{-1}=u_{1}+\frac{2\delta{}h}{\nu}
+$$
+
+Using this expression in the generic form of the numerical scheme provides us with the first row of our matrix. Notice here that for Neumann boundary condition not only a term is added to the right-hand side of the problem, but also modified one matrix element associated to $u_{1}$.
+
+$$
+    (1+2\alpha)u^{n+1}_{0}-2\alpha{}u^{n+1}_{1}=u^{n}_{0}+2\alpha\delta{}h\nu^{-1}
+$$
+
+Following we visualize the full final matrix form for this boundary condition.
+
+$$
+\begin{bmatrix}
+~1+2\alpha& -2\alpha& ~0& ~0& ~0& \ldots &~0\\[2pt] 
+-\alpha&~1+2\alpha&-\alpha&~0&~0&\ldots &~0\\[2pt]
+~0&-\alpha&~1+2\alpha&-\alpha&~0&\ldots &~0\\[2pt] 
+\vdots &\vdots &\vdots &\vdots &\vdots &\ddots &\vdots \\[2pt] 
+~0&\ldots &~0&-\alpha&~1+2\alpha&-\alpha&~0\\[2pt]
+~0&\ldots &\ldots &~0&-\alpha&~1+2\alpha&-\alpha\\[2pt] 
+~0&\ldots &\ldots &\ldots &~0&-2\alpha&~1+2\alpha
+\end{bmatrix}\cdotp
+\begin{bmatrix}
+u^{n+1}_{0}   \\[2pt]
+u^{n+1}_{1}   \\[2pt]
+u^{n+1}_{2}   \\[2pt]
+\vdots        \\[2pt]
+u^{n+1}_{N-3} \\[2pt]
+u^{n+1}_{N-2} \\[2pt] 
+u^{n+1}_{N-1} \\[2pt]
+\end{bmatrix} = 
+\begin{bmatrix}
+u^{n}_{0}   \\[2pt]
+u^{n}_{1}   \\[2pt]
+u^{n}_{2}   \\[2pt]
+\vdots      \\[2pt]
+u^{n}_{N-3} \\[2pt]
+u^{n}_{N-2} \\[2pt] 
+u^{n}_{N-1} \\[2pt]
+\end{bmatrix} +
+\begin{bmatrix}
+2\alpha\delta{}h\nu^{-1} \\[2pt]
+0           \\[2pt]
+0           \\[2pt]
+\vdots      \\[2pt]
+0           \\[2pt]
+0           \\[2pt] 
+2\alpha\delta{}h\nu^{-1}\\[2pt]
+\end{bmatrix}
+$$
+
+**Fourier:** this third-type represents a generalization of both previous ones. This is why it is the preferred method for implementing generic code dealing with a broaded range of problems. The general form of Fourier boundary condition is given by:
+
+$$
+    a{}u + b\frac{\partial{}u}{\partial{}x}=g
+$$
+
+$$
+    u + \nu\frac{\partial{}u}{\partial{}x}=h
+$$
+
+
+
+### Thomas solver
+
+### Sample case
+
+$$
+\begin{cases}
+u=2 & x\in[0,5;\, 1,0]\\
+u=1 & \text{elsewhere}
+\end{cases}
+$$
+
++++
+
+# Introduction to diffusion (Part C)
+
+## Nonlinear diffusion in 1-D
+
+$$
+    \frac{\partial u}{\partial t}=  \frac{\partial{}}{\partial{}x}\left(\nu(u)\frac{\partial{}u}{\partial{}x}\right)
+$$
+
+$$
+    \frac{\partial u}{\partial t}= \nu(u) \frac{\partial^{2}{}u}{\partial{}x^{2}}+
+    \frac{\partial{}\nu(u)}{\partial{}x}\frac{\partial{}u}{\partial{}x}
+$$
+
+
+## Study case
+
+$$
+    \frac{\partial u}{\partial t}= u\frac{\partial^{2}{}u}{\partial{}x^{2}}+
+    \left(\frac{\partial{}u}{\partial{}x}\right)^2
+$$
+
+$$
+    D^{\gamma}_{C}=4.84\times{}10^{-5}\exp\left(-\frac{150000}{RT}\right)\exp\left(\frac{570000-320{}T}{RT}x_{C}\right)\frac{1}{1-5x_{C}}
+$$
+
+```{code-cell}
+
+```
+
+
+
+
+---
+From old report
+
 \section{Introduction}
 
 This sample program has been conceived for didactic purposes of teaching Fick's second law in its linear form (constant diffusion coefficient). In is conceived as a dummy example for asking students to provide the required modifications to reach generality in non-linear form as exercise. Introduction to Finite Volume Method (FVM) is supposed to have already been done in such a way that this tutorial goes directly to the details of the equation discretization. Numerical analysis and stability conditions are not provided.
