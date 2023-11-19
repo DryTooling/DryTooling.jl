@@ -26,6 +26,14 @@ function devpkgs()
     end
 end
 
+"Construct recursive pages tree."
+function getpages(x)
+    if isa(x["target"], Vector{Dict{Any, Any}})
+        return x["name"] => getpages.(x["target"])
+    end
+    return x["name"] => x["target"]
+end
+
 ##############################################################################
 # PACKAGES BLOCK
 ##############################################################################
@@ -71,6 +79,8 @@ formats = [
     )
 ]
 
+
+
 makedocs(;
     modules  = modules,
     format   = formats[1],
@@ -78,7 +88,7 @@ makedocs(;
     sitename = conf["site"],
     authors  = "$(conf["name"]) <$(conf["mail"])> and contributors",
     repo     = "$(repo)/blob/{commit}{path}#{line}",
-    pages    = map(x->x["name"]=>x["target"], conf["pages"]),
+    pages    = map(getpages, conf["pages"]),
     plugins  = [
         CitationBibliography(this("src/references.bib"))
     ],
