@@ -79,8 +79,6 @@ formats = [
     )
 ]
 
-
-
 makedocs(;
     modules  = modules,
     format   = formats[1],
