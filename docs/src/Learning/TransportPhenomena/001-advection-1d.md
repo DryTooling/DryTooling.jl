@@ -1,16 +1,49 @@
 # Introduction to Advection in 1-D
 
-In this chapter we enter the first topic to which the title of this book refers.
-Advection is one of the terms present in the Navier-Stokes equations. It
+Advection is one of the terms present in the Navier-Stokes equations; it
 describes the transport of a quantity induced by a vector field. The choice to
 start with this topic rather than diffusion or the Poisson equation is mainly
-justified by the extremely simple computational implementation in the explicit
-form of this equation. One could try another explanation justifying that this
-term is also the simplest in the Navier-Stokes equation, but the debate would be
-long and eventually meaningless, since many of the main difficulties in solving
-flow fields arise from the advective term. In what follows we will first address
+justified by the simple computational implementation in the explicit form of
+this equation using an *upwind* scheme. In what follows we will first address
 the linear and subsequently nonlinear form of advection. To conclude the
 chapter, we will perform a numerical stability analysis of the problem.
+
+## Goals
+
+1. Learn advection both in PDE and numerical perspectives.
+1. Implement a set of tools to solve advection equation.
+1. Provide post-processing for standard visualization of results.
+1. Learn the basics of numerical stability analysis.
+
+## Required tools
+
+Once the goals have been set, we should already be able to guess the base set of
+tools required for their achievement.
+
+1. Since Julia is a language conceived for scientific computing, all the tooling
+   for the implementation of the equations in a vectorized form is already
+   available, so we do not need any further packages for now. 
+
+1. In this study, to ensure the physical consistency of derived equations and
+   their correct implementation, we will provide numerical values with units
+   through *u-strings* provided by package
+   [`Unitful`](https://painterqubits.github.io/Unitful.jl/stable/).
+
+1. For all the visualizations we will make use of
+   [`CairoMakie`](https://docs.makie.org/stable/).
+
+!!! warning "Beware!"
+
+    Using units could represent some overhead in large scale problems. It is important to keep the code compatible with purely numerical values when implementing packages.
+
+The following block import the required packages:
+
+```@example global
+using Unitful
+using CairoMakie
+```
+
+## Background
 
 Pure linear advection -- in one dimension -- is the phenomenon describing the
 evolution of a quantity ``u`` transported across a field of constant velocity
@@ -107,16 +140,9 @@ sizes of discrete steps ``\tau`` and ``\delta``. For now we rely only on the
 mathematical background we have on Taylor series expansion to think about it,
 and we postpone the methods of computing suitable steps for later. .
 
-## Required tools
-
-In what follows we focus on the computer implementation of the problem. For the implementation of the equations in a vectorized form, since Julia is a language conceived for scientific computing, all the tooling is already available. In this study, to ensure the physical consistency of derived equations and their correct implementation, we will provide numerical values with units through *u-strings* provided by package [`Unitful`](https://painterqubits.github.io/Unitful.jl/stable/). Please note that this could represent some overhead in large scale problems, so it is important to keep the code compatible with purely numerical values when implementing packages. For all the visualizations we will make use of [`CairoMakie`](https://docs.makie.org/stable/).
-
-```@example global
-using Unitful
-using CairoMakie
-```
-
 ## Shared utilities
+
+In what follows we focus on the computer implementation of the problem.
 
 ```@example global
 abstract type AbstractAdvection end
