@@ -8,7 +8,7 @@ this equation using an *upwind* scheme. In what follows we will first address
 the linear and subsequently nonlinear form of advection. To conclude the
 chapter, we will perform a numerical stability analysis of the problem.
 
-## Goals
+The general goals of this study can be summarized as:
 
 1. Learn advection both in PDE and numerical perspectives.
 1. Implement a set of tools to solve advection equation.
@@ -18,7 +18,8 @@ chapter, we will perform a numerical stability analysis of the problem.
 ## Required tools
 
 Once the goals have been set, we should already be able to guess the base set of
-tools required for their achievement.
+tools required for their achievement. Below we specify the logic behind our
+choices.
 
 1. Since Julia is a language conceived for scientific computing, all the tooling
    for the implementation of the equations in a vectorized form is already
@@ -43,13 +44,14 @@ using Unitful
 using CairoMakie
 ```
 
-## Background
+## Advection fundamentals
 
-Pure linear advection -- in one dimension -- is the phenomenon describing the
-evolution of a quantity ``u`` transported across a field of constant velocity
-``c``. Also notice that the quantity ``u`` may be the velocity field itself in a
-more general framework we will deal with later. Transport is expressed as
-``u(x,t+\Delta{}t)=u(x-c\Delta{}t,t)``, what indicates simply that the state at
+Advection in one dimension is the phenomenon describing the evolution of a
+quantity ``u`` transported across a field of constant velocity ``c``. Also
+notice that the quantity ``u`` may be the velocity field itself in a more
+general framework we will deal with laterm leading to the nonlinear form of
+advection equation. Transport is expressed in time and space as
+``u(x,t+\Delta{}t)=u(x-c\Delta{}t,t)``. That indicates simply that the state at
 ``{x}-{c}\Delta{t}`` will be found at position ``x`` after a time interval
 ``\Delta{}t``, *i.e.* for a constante velocity field ``c`` the profile ``u`` is
 invariant. For a very short time interval ``\Delta{}t`` with respect to system
@@ -76,17 +78,17 @@ validation of implemented programs.
 Since our goal is the introduction to the computational aspects only, we skip a
 detailed numerical analyses showing that centered in space schemes are not
 suitable for the computation of space derivatives applied to advection equation
-since they exhibit an *unconditionally unstable* behavior. This is quite
-understandable from a physical standpoint because *information* is travelling
-along the velocity field, and *information* in front of the traveling wave
-cannot have any *knowledge* on the prior shape of the wave. That is why
-so-called *upwind* schemes are suitable for numerical computation of advection.
-In such family of schemes, the *information* coming from the origin of the
-advecting flow is used to evaluate the upcoming wave position, *i.e.* for ``c>0``
-the solution at ``x`` is computed from the solution at ``x-\Delta{}x``, thus the
-reason why it is called upwind, here ``\Delta{}x`` is a *finite* variation over
-coordinate ``x``. It can be shown through a Taylor series expansion truncated at
-first order that
+since they exhibit an *unconditionally unstable* behavior. The origin of
+unstability of some of these is is quite understandable from a physical
+standpoint. *Information* is travelling along the velocity field, and any
+*information* in front of the traveling wave cannot have any *knowledge* on the
+prior shape of the wave. That is why so-called *upwind* schemes are suitable for
+numerical computation of advection. In such family of schemes, the *information*
+coming from the origin of the advecting flow is used to evaluate the upcoming
+wave position, *i.e.* for ``c>0`` the solution at ``x`` is computed from the
+solution at ``x-\Delta{}x``, thus the reason why it is called upwind, here
+``\Delta{}x`` is a *finite* variation over coordinate ``x``. It can be shown
+through a Taylor series expansion truncated at first order that
 
 ```math
 \dfrac{\partial{}u}{\partial{}x}\approx
@@ -95,11 +97,17 @@ first order that
 
 !!! note "Upwind advection scheme"
 
-    Suponha que dispomos de um vetor `u` contendo valores da solução do problema em um dado instante, com cada elemento de `u` correspondendo a uma coordenada espacial ``{x}``. Para implementar a equação \eqref{eq:upwind-advection-term} em Julia podemos utilizar o seguinte código \emph{vetorizado}. Lembre-se que a base de indexação -- indice do primeiro elemento em vetores -- de Julia é 1 e não 0 como em Python ou C++.
+    The above expression is quite intuitive. Let's see how would it be
+    implemented as Julia code. Supose you have an array of solution `u` at
+    each of the discrete space points `x`. Since points are spaced by
+    ``\Delta{}x``, represented in code as `Δx`  , then taking the difference
+    between  consecutive values of `u` is equivalent to the upwind scheme as follows:
 
     ```julia
-    dudx = (u[2:end] - u[1:end-1]) / dx;
+    dudx = (u[2:end] - u[1:end-1]) / Δx;
     ```
+
+    Remember that indices in Julia start at 1, not at 0 as in Python or C++.
 
 Other higher order expansions are available in the literature, but they are not
 well-suited for an introductory course on numerical implementation of the
@@ -125,28 +133,70 @@ coordinate node. Also it is useful to maker shorthands ``\tau=\Delta{}t`` and
 \frac{u_{i}^{n+1}-u_{i}^n}{\tau}+c\frac{u_{i}^n-u_{i-1}^n}{\delta}=0
 ```
 
-Our goal of approaching the equation to the computer implementation format has been reached. So far we are only considering fixed time-steps ``\tau`` and node distances ``\delta``, and constant advection velocity ``c``, thus there are still a three constants hanging around. Since problem initial state is *a priori* knowledge for PDE integration, at ``n=0`` and ``\forall{}i`` we dispose of the state ``u_{i}^{n}=u_{i}^{0}``, so the only unknown in the above equation is ``u_{i}^{n+1}``, for which it can be solved
+Our goal of approaching the equation to the computer implementation format has
+been reached. So far we are only considering fixed time-steps ``\tau`` and
+internodal distances ``\delta``, and constant advection velocity ``c``. Since
+problem initial state is *a priori* knowledge for PDE integration, at ``n=0``
+and ``\forall{}i`` we dispose of the state ``u_{i}^{n}=u_{i}^{0}``, so the only
+unknown in the above equation is ``u_{i}^{n+1}``, for which it can be solved
 
 ```math
 u_{i}^{n+1}=(1-\alpha)u_{i}^{n}+\alpha{}u_{i-1}^n
 ```
 
-Such approximation that makes use of current state to predict a future one is called an *explicit* time-stepping scheme and has been implied without explanation in the above discretization approach. With this expression we have the complete mathematical tooling to solve the simplest advection equation. Notice that for ``c<0`` the direction of the upwind space derivative would change and the solution becomes ``u_{i}^{n+1}=(1+\alpha)u_{i}^{n}-\alpha{}u_{i+1}^n``.
+Such approximation that makes use of current state to predict a future one is
+called an *explicit* time-stepping scheme and has been implied without
+explanation in the above discretization approach. With this expression we have
+the complete mathematical tooling to solve the simplest advection equation.
+Notice that for ``c<0`` the direction of the upwind space derivative would
+change and the solution becomes
+``u_{i}^{n+1}=(1+\alpha)u_{i}^{n}-\alpha{}u_{i+1}^n``.
 
 Now suppose we want to solve advection of a given wave over a 1-D space domain.
 The discrete solution derived above provides most information we need to gather
 before starting to develop a computer solution, but it says nothing about the
 sizes of discrete steps ``\tau`` and ``\delta``. For now we rely only on the
 mathematical background we have on Taylor series expansion to think about it,
-and we postpone the methods of computing suitable steps for later. .
+and we postpone the methods of computing suitable steps for later.
 
-## Shared utilities
+With this formulation we are ready to start sketching a numerical solver.
+
+## Program structure
 
 In what follows we focus on the computer implementation of the problem.
+
+So let's again sketch some goals for our program:
+
+1. It must handle both linear and nonlinear 1-D advection equations.
+1. It must provide a reusable time-stepping function for integration.
+1. It must provide standardized post-processing utilities.
+
+Because we are seeking generality to solve a whole class of problems, *i.e.* any
+type of 1-D advection problem it is interesting considering the use of abstract
+types. These are used to structure a hierarchy of problems. Abstract types in
+Julia do not really have arguments, as it is possible in other languages. They
+simply provide a name and associated methods. Notice that because of this, when
+inheriting from abstract types, it is important to make sure the new structures
+are compatible with the base methods, that they provide the required arguments.
+So we start with the definition of an abstract type for all of the advection
+equations we might implement here:
 
 ```@example global
 abstract type AbstractAdvection end
 ```
+
+!!! info  "Real world cases"
+
+    Previously, by hierarchy we meant models that can be a subset of larger
+    scope models. In a library implementation you might find something as:
+
+    ```julia
+    abstract type AbstractPhysicalModel end
+    abstract type AbstractPDEModel <: AbstractPhysicalModel end
+    abstract type AbstractAdvection <: AbstractPDEModel end
+    abstract type AbstractAdvection1D <: AbstractAdvection end
+    abstract type AbstractAdvection2D <: AbstractAdvection end
+    ```
 
 The solution loop is straightforward: we store the current state and solve over the same array the next time solution, what constitutes a simple explicit *Euler* time-stepping scheme. Since Julia supports vectorized operations we use the slice syntax to evaluate ``(1-\alpha)u_{i}^{n}+\alpha{}u_{i-1}^n`` and attribute it elementwise to ``u_{i}^{n+1}``. Notice that element `u[1]` is never updated here, think for a moment what are the implications of this.
 
