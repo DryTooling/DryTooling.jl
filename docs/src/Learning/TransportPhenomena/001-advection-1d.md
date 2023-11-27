@@ -191,11 +191,18 @@ abstract type AbstractAdvection end
     scope models. In a library implementation you might find something as:
 
     ```julia
-    abstract type AbstractPhysicalModel end
+    abstract type AbstractModel end
+
+    abstract type AbstractPhysicalModel <: AbstractModel end
+    abstract type AbstractODEModel <: AbstractPhysicalModel end
     abstract type AbstractPDEModel <: AbstractPhysicalModel end
+    abstract type AbstractKinetics <: AbstractODEModel end
     abstract type AbstractAdvection <: AbstractPDEModel end
     abstract type AbstractAdvection1D <: AbstractAdvection end
     abstract type AbstractAdvection2D <: AbstractAdvection end
+    
+    struct LinearAdvection1D <: AbstractAdvection1D end
+    struct NonlinearAdvection1D <: AbstractAdvection1D end
     ```
 
 The solution loop is straightforward: we store the current state and solve over the same array the next time solution, what constitutes a simple explicit *Euler* time-stepping scheme. Since Julia supports vectorized operations we use the slice syntax to evaluate ``(1-\alpha)u_{i}^{n}+\alpha{}u_{i-1}^n`` and attribute it elementwise to ``u_{i}^{n+1}``. Notice that element `u[1]` is never updated here, think for a moment what are the implications of this.
