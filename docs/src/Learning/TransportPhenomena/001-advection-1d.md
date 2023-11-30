@@ -15,8 +15,6 @@ The general goals of this study can be summarized as:
 1. Provide post-processing for standard visualization of results.
 1. Learn the basics of numerical stability analysis.
 
-## Required tools
-
 Once the goals have been set, we should already be able to guess the base set of
 tools required for their achievement. Below we specify the logic behind our
 choices.
@@ -101,7 +99,8 @@ through a Taylor series expansion truncated at first order that
     implemented as Julia code. Supose you have an array of solution `u` at
     each of the discrete space points `x`. Since points are spaced by
     ``\Delta{}x``, represented in code as `Δx`  , then taking the difference
-    between  consecutive values of `u` is equivalent to the upwind scheme as follows:
+    between  consecutive values of `u` is equivalent to the upwind scheme as
+    follows:
 
     ```julia
     dudx = (u[2:end] - u[1:end-1]) / Δx;
@@ -185,7 +184,7 @@ equations we might implement here:
 abstract type AbstractAdvection end
 ```
 
-!!! info  "Real world cases"
+!!! note "Real world cases"
 
     Previously, by hierarchy we meant models that can be a subset of larger
     scope models. In a library implementation you might find something as:
@@ -363,8 +362,6 @@ nothing # hide
 
 To modify the regions ouside the peak we create a boolean mask. In Julia, to evaluate a binary operation elementwise, a dot is placed in front of the operator. So here `xᵤ[1] .< x` means true where elements of `x` are less than the first element of `xᵤ`, for instance. Since the mask we created represent the square wave region, we negate the resulting array to set zero elsewhere in the density array `u`. Also observe the `.=` notation to attribute results. This vectorized operations supported by Julia avoid the excessive use of loops and result in easier to maintain code.
 
-## Solve linear advection
-
 To remain within the region where the error introduced by the discretization
 scheme remains *small*, we need to *think* what would be a good number of steps
 and nodes to split our system. Thinking physically, we would not want the
@@ -469,8 +466,6 @@ function step!(p::NonlinearAdvection1D)::Nothing
     return nothing
 end
 ```
-
-## Solve nonlinear advection
 
 ```@example global
 nₓ = 101
