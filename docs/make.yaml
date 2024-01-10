@@ -42,14 +42,6 @@ pages:
       - name: Learning
         target: Learning/index.md
 
-      - name: Julia para Cientistas
-        target:
-          - Learning/JuliaParaCientistas/index.md
-          - Learning/JuliaParaCientistas/001-primeiros-passos.md
-          - Learning/JuliaParaCientistas/002-manipulacao-textual.md
-          - Learning/JuliaParaCientistas/003-estruturas-de-dados.md
-          - Learning/JuliaParaCientistas/004-estruturas-de-dados.md
-
       - name: Transport Phenomena
         target:
           - Learning/TransportPhenomena/index.md
