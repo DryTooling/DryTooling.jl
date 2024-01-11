@@ -41,8 +41,3 @@ pages:
     target:
       - name: Learning
         target: Learning/index.md
-
-      - name: Transport Phenomena
-        target:
-          - Learning/TransportPhenomena/index.md
-          - Learning/TransportPhenomena/001-advection-1d.md
